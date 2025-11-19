@@ -10,8 +10,7 @@ class Database:
     # récupère la connexion
     def get_connection(self):
         if self.connection is None:
-            self.connection = sqlite3.connect(self.db_path, check_same_thread=False)
-            self.connection.row_factory = sqlite3.Row  # Permet d'accéder aux colonnes par nom
+            self.connection = sqlite3.connect(self.db_path)
         return self.connection
 
     # déconnecte la connexion

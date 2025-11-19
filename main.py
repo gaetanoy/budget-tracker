@@ -1,20 +1,23 @@
+import logging 
+
 from fastapi import FastAPI
 from database.db import Database
 from contextlib import asynccontextmanager
-db = Database()
 
-# Initialisation de l'application FastAPI
+
+db = Database()
+logger = logging.getLogger("uvicorn.error")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup logic
+    # Startup
     try:
         db.init_database()
         print("Base de données initialisée avec succès")
     except Exception as e:
         print(f"Erreur lors de l'initialisation de la base de données: {e}")
     yield
-    # Shutdown logic
+    # Shutdown 
     db.disconnect()
     print("Connexion à la base de données fermée")
 
