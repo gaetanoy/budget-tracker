@@ -13,13 +13,13 @@ async def lifespan(app: FastAPI):
     # Startup
     try:
         db.init_database()
-        logger.info("Base de données initialisée avec succès")
+        logger.info("Base de données initialisée avec succès.")
     except Exception as e:
         logger.error(f"Erreur lors de l'initialisation de la base de données: {e}")
     yield
     # Shutdown 
     db.close()
-    logger.info("Connexion à la base de données fermée")
+    logger.info("Connexion à la base de données fermée.")
 
 app = FastAPI(
     title="ANAS - Budget Tracker API",
