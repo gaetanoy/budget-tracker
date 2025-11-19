@@ -1,5 +1,5 @@
 class Category:
-    def __init__(self, name, description=None):
+    def __init__(self, id, title, color, icon, user_id):
         self.id = id
         self.title = title
         self.color = color
