@@ -1,5 +1,5 @@
 class Transaction:
-    def __init__(self, transaction_id, amount, currency, status):
+    def __init__(self, transaction_id, amount, title, date, user_id, category_id):
         self.transaction_id : int = transaction_id
         self.amount: float = amount
         self.title: str = title
