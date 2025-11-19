@@ -1,5 +1,13 @@
+import logging
 from fastapi import FastAPI
 from database.db import Database
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 db = Database()
 
@@ -15,16 +23,16 @@ async def startup_event():
     """Initialise la base de données au démarrage"""
     try:
         db.init_database()
-        print("Base de données initialisée avec succès")
+        logger.info("Base de données initialisée avec succès")
     except Exception as e:
-        print(f"Erreur lors de l'initialisation de la base de données: {e}")
+        logger.error(f"Erreur lors de l'initialisation de la base de données: {e}")
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
     """Ferme la connexion à la base de données à l'arrêt"""
     db.disconnect()
-    print("Connexion à la base de données fermée")
+    logger.info("Connexion à la base de données fermée")
 
 
 @app.get("/")
