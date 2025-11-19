@@ -1,7 +1,7 @@
 import logging 
 
 from fastapi import FastAPI
-from database.db import Database
+from database import Database
 from contextlib import asynccontextmanager
 
 
@@ -16,9 +16,10 @@ async def lifespan(app: FastAPI):
         logger.info("Base de données initialisée avec succès.")
     except Exception as e:
         logger.error(f"Erreur lors de l'initialisation de la base de données: {e}")
+        raise e
     yield
     # Shutdown 
-    db.close()
+    db.dispose()
     logger.info("Connexion à la base de données fermée.")
 
 app = FastAPI(
