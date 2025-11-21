@@ -11,9 +11,11 @@ class Database:
 
     def init_database(self, script_path: str = "database/scripts/create.sql"):
         with open(script_path, "r", encoding="utf-8") as f:
-            sql = f.read()
+            sql_script = f.read()
         with self.engine.begin() as conn:
-            conn.exec_driver_sql(sql)
+            for statement in sql_script.split(";"):
+                if statement.strip():
+                    conn.exec_driver_sql(statement)
 
     @contextmanager
     def session(self):

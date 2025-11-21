@@ -1,5 +1,5 @@
 class Category:
-"""
+    """
     Represents a category that can be applied to transactions.
     
     Attributes:
