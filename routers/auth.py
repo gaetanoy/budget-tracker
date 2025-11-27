@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from database.database import get_db
 from database.crud import create_user, get_user_by_email, get_user_by_username
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 import hashlib
 import uuid
@@ -13,7 +13,7 @@ import uuid
 # Configuration JWT
 SECRET_KEY = "votre_cle_secrete_tres_longue_et_aleatoire" # À mettre dans un .env
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 1
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -38,9 +38,9 @@ class Token(BaseModel):
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.now() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.now() + timedelta(minutes=15)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
@@ -117,9 +117,11 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-
 @router.get("/profile")
 def get_profile(current_user = Depends(get_current_user)):
     # Grâce à Depends(get_current_user), cet endpoint est maintenant protégé.
     # Si le token est invalide, l'utilisateur n'arrivera jamais ici.
     return {"email": current_user.email, "username":current_user.username, "id": current_user.id}
+
+
+# TODO logout : forcer l'expiration du token
