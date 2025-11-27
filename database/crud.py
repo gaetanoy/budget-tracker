@@ -17,7 +17,7 @@ def create_user(db: Session, email: str, username:str, hashed_password: str, sal
     if existing_user_username:
         raise ValueError("Username already taken")
 
-    new_user = User(email=email, hashed_password=hashed_password, salt=salt)
+    new_user = User(email=email, username=username, hashed_password=hashed_password, salt=salt)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)

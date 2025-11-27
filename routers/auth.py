@@ -122,4 +122,4 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
 def get_profile(current_user = Depends(get_current_user)):
     # Grâce à Depends(get_current_user), cet endpoint est maintenant protégé.
     # Si le token est invalide, l'utilisateur n'arrivera jamais ici.
-    return {"email": current_user.email, "id": current_user.id}
+    return {"email": current_user.email, "username":current_user.username, "id": current_user.id}
