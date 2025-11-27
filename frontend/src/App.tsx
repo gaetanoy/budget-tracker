@@ -2,8 +2,17 @@ import { useState } from "react";
 import viteLogo from "/vite.svg";
 import reactLogo from "./assets/react.svg";
 import "./App.css";
+import { Outlet } from "react-router";
 
-function App() {
+export function MainLayout() {
+  return (
+    <div>
+      <Outlet />
+    </div>
+  );
+}
+
+export default function App() {
   const [count, setCount] = useState(0);
 
   return (
@@ -31,5 +40,3 @@ function App() {
     </>
   );
 }
-
-export default App;
