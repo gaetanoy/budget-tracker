@@ -1,5 +1,5 @@
 # database package
 
-from .db import Database
+from .database import Database
 
 __all__ = ['Database']
