@@ -111,7 +111,7 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     # On stocke l'identifiant utilisé (ou toujours l'email pour simplifier) dans le 'sub'
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.identifier}, expires_delta=access_token_expires
+        data={"sub": db_user.email}, expires_delta=access_token_expires
     )
     
     return {"access_token": access_token, "token_type": "bearer"}
