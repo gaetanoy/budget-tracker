@@ -5,6 +5,7 @@ export const List = styled.div`
   flex-direction: column;
   gap: 16px;
   width: 75%;
+  padding-bottom: 20px;
 `;
 
 export const DateGroup = styled.div`
