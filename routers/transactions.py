@@ -7,6 +7,8 @@ from database.models.transaction import Transaction as TransactionModel
 
 from database.database import get_db
 from database.models.category import Category as CategoryModel
+from pydantic import BaseModel
+from sqlalchemy.exc import IntegrityError
 
 router = APIRouter()
 
@@ -90,6 +92,55 @@ def get_transaction(
 
     category_data = {c.name: getattr(cat, c.name) for c in cat.__table__.columns}
 
+    tx_data["category"] = category_data
+
+    return tx_data
+
+
+class TransactionCreate(BaseModel):
+    user_id: int
+    category_id: int
+    date: date
+    amount: float
+    description: Optional[str] = None
+
+
+@router.post("/transaction", response_model=dict, status_code=status.HTTP_201_CREATED)
+def create_transaction(payload: TransactionCreate, db: Session = Depends(get_db)):
+    """
+    Create a new transaction inside an explicit SQL transaction.
+    Validates that the category exists. Returns the created transaction
+    including full category details (does not expose internal ids).
+    """
+    # ensure category exists
+    category = db.query(CategoryModel).filter(CategoryModel.id == payload.category_id).one_or_none()
+    if category is None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Category not found")
+
+    try:
+        with db.begin():
+            tx = TransactionModel(
+                user_id=payload.user_id,
+                category_id=payload.category_id,
+                date=payload.date,
+                amount=payload.amount,
+                description=payload.description,
+            )
+            db.add(tx)
+            db.flush()
+            db.refresh(tx)
+    except IntegrityError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Constraint violation or duplicate transaction")
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create transaction")
+
+    # build response (hide internal id, user_id, category_id; include full category)
+    tx_data = {
+        c.name: getattr(tx, c.name)
+        for c in tx.__table__.columns
+        if c.name not in ("id", "user_id", "category_id")
+    }
+    category_data = {c.name: getattr(category, c.name) for c in category.__table__.columns}
     tx_data["category"] = category_data
 
     return tx_data
