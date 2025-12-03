@@ -24,8 +24,8 @@ def create_user(db: Session, email: str, username:str, hashed_password: str, sal
     return new_user
 
 
-def create_category(db: Session, name: str, user_id: int)->Category:
-    new_category = Category(name=name, user_id=user_id)
+def create_category(db: Session, name: str, user_id: int,icon: str,color: str)->Category:
+    new_category = Category(name=name, user_id=user_id, icon=icon, color=color)
     db.add(new_category)
     db.commit()
     db.refresh(new_category)
@@ -34,4 +34,15 @@ def create_category(db: Session, name: str, user_id: int)->Category:
 def get_categories_by_user(db: Session, user_id: int):
     return db.query(Category).filter(Category.user_id == user_id).all()
     
+
+
+def delete_category(db: Session, category_id: int):
+    db.query(Category).filter(Category.id == category_id).delete()
+    db.commit()
+    db.refresh(Category)
+
+def update_category(db: Session, category_id: int, update_data: dict):
+    db.query(Category).filter(Category.id == category_id).update(update_data)
+    db.commit()
+    db.refresh(Category)
 
