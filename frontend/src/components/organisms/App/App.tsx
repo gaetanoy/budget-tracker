@@ -35,11 +35,15 @@ export default function App() {
       category: null,
       date: new Date("2025-12-02"),
     },
-  ];
+  ]; // TODO API Call
 
   return (
     <Styled.Wrapper>
-      <Summary amount={-1.0} />
+      <Summary
+        amount={movements
+          .map((mov) => mov.value)
+          .reduce((acc, movValue) => acc + movValue)}
+      />
       <h1>Liste des dépenses</h1>
       <Movements items={movements} />
     </Styled.Wrapper>
