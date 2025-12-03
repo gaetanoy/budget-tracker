@@ -5,7 +5,7 @@ from database.models import Base
 from contextlib import asynccontextmanager
 import logging
 
-from routers import auth, categories
+from routers import auth, categories, transactions
 
 
 logger = logging.getLogger("uvicorn.error")
@@ -32,6 +32,7 @@ app = FastAPI(
 )
 
 app.include_router(auth.router)
+app.include_router(transactions.router)
 
 
 
