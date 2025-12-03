@@ -6,7 +6,7 @@ export const Movement: React.FC<MovementProps> = (props: MovementProps) => {
   return (
     <Styled.Container>
       <Styled.Label>{props.label}</Styled.Label>
-      <Styled.Category>{props.category ?? "Non catégorisée"}</Styled.Category>
+      <Styled.Category>{props.category ?? "Non catégorisé"}</Styled.Category>
       <Styled.Value value={props.value}>{props.value}</Styled.Value>
     </Styled.Container>
   );
