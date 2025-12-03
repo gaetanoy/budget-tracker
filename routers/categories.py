@@ -115,7 +115,7 @@ def modify_category(
 def auto_categorize(
     category_guess: CategoryGuessResponse, db: Session = Depends(get_db), current_user=Depends(get_current_user)
 ):
-    login("booga")
+    login(os.getenv("HF_TOKEN"))
     pipe = pipeline(
         "text-generation",
         model="google/gemma-3-4b-it",
