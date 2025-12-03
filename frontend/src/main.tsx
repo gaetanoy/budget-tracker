@@ -1,7 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router";
-import App, { MainLayout } from "./App.tsx";
+import App from "./App.tsx";
+import MainLayout from "./MainLayout.tsx";
 
 // biome-ignore lint/style/noNonNullAssertion: element root should be here
 createRoot(document.getElementById("root")!).render(

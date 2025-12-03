@@ -1,13 +1,36 @@
-import { Outlet } from "react-router";
+import styled from "styled-components";
 
-export function MainLayout() {
+const Wrapper = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+const SummaryWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: whitesmoke;
+  border-radius: 10px;
+  padding: 0.5em;
+  margin: 0.5em;
+  font-size: 2em;
+  font-weight: bold;
+`;
+
+function Summary() {
   return (
-    <div>
-      <Outlet />
-    </div>
+    <SummaryWrapper>
+      <p>12.23 €</p>
+    </SummaryWrapper>
   );
 }
 
 export default function App() {
-  return <h1>Coucou</h1>;
+  return (
+    <Wrapper>
+      <Summary />
+      <h1>Liste des dépenses</h1>
+    </Wrapper>
+  );
 }
