@@ -1,6 +1,5 @@
-from fastapi import FastAPI, Depends, HTTPException
-from sqlalchemy.orm import Session
-from database import SessionLocal, engine
+from fastapi import FastAPI
+from database import engine
 from database.models import Base
 from contextlib import asynccontextmanager
 import logging
@@ -32,6 +31,7 @@ app = FastAPI(
 )
 
 app.include_router(auth.router)
+app.include_router(categories.router)
 
 
 
