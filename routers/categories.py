@@ -14,6 +14,7 @@ from typing import List
 from transformers import pipeline
 import torch
 from huggingface_hub import login
+import os
 
 router = APIRouter(prefix="/categories", tags=["categories"])
 
@@ -43,8 +44,12 @@ class CategoryResponse(BaseModel):
 class MessageResponse(BaseModel):
     message: str
 
+class CategoryGuessRequest(BaseModel):
+    transaction_description: str
+
 class CategoryGuessResponse(BaseModel):
-    transaction_description: str | None
+    category: str
+
 
 @router.post(
     "/create", status_code=status.HTTP_201_CREATED, response_model=CategoryResponse
@@ -111,9 +116,9 @@ def modify_category(
     return updated_category
 
 
-@router.get("/auto-categorize", response_model=CategoryGuessResponse)
+@router.post("/auto-categorize", response_model=CategoryGuessResponse)
 def auto_categorize(
-    category_guess: CategoryGuessResponse, db: Session = Depends(get_db), current_user=Depends(get_current_user)
+    category_guess: CategoryGuessRequest, db: Session = Depends(get_db), current_user=Depends(get_current_user)
 ):
     login(os.getenv("HF_TOKEN"))
     pipe = pipeline(
@@ -166,4 +171,4 @@ def auto_categorize(
     # verification que la catégorie prédite est dans la liste
     matched_category = next((name for name in category_names if name.lower() == predicted_category.lower()), None)
 
-    return matched_category if matched_category else "Autre" 
+    return {"category": matched_category if matched_category else "Autres"}
