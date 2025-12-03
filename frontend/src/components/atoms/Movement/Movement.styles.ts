@@ -5,13 +5,11 @@ export const Container = styled.div`
   border: 2px solid #2a2a2a;
   border-radius: 12px;
   padding: 12px 16px;
-  width: fit-content;
+  width: 100%;
 
   display: flex;
   flex-direction: column;
   gap: 4px;
-
-  width: 220px;
 `;
 
 export const Label = styled.div`
