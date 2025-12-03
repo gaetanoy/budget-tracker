@@ -6,6 +6,7 @@ from sqlalchemy import and_
 from database.models.transaction import Transaction as TransactionModel
 
 from database.database import get_db
+from database.models.category import Category as CategoryModel
 
 router = APIRouter()
 
@@ -59,3 +60,36 @@ def get_transactions(
     results = query.all()
 
     return [_serialize_transaction(tx) for tx in results]
+
+@router.get("/transaction/{transaction_id}", response_model=dict)
+def get_transaction(
+    transaction_id: int,
+    db: Session = Depends(get_db),
+):
+    """
+    Return a single transaction by its transaction_id.
+    Does not expose transaction id or user id. Includes full category details.
+    """
+    row = (
+        db.query(TransactionModel, CategoryModel)
+        .join(CategoryModel, TransactionModel.category_id == CategoryModel.id)
+        .filter(TransactionModel.transaction_id == transaction_id)
+        .one_or_none()
+    )
+
+    if row is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Transaction not found")
+
+    tx, cat = row
+
+    tx_data = {
+        c.name: getattr(tx, c.name)
+        for c in tx.__table__.columns
+        if c.name not in ("id", "user_id", "category_id")
+    }
+
+    category_data = {c.name: getattr(cat, c.name) for c in cat.__table__.columns}
+
+    tx_data["category"] = category_data
+
+    return tx_data
