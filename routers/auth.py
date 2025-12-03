@@ -13,7 +13,7 @@ import uuid
 # Configuration JWT
 SECRET_KEY = "votre_cle_secrete_tres_longue_et_aleatoire" # À mettre dans un .env
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -117,11 +117,13 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/profile")
+@router.get("/account")
 def get_profile(current_user = Depends(get_current_user)):
     # Grâce à Depends(get_current_user), cet endpoint est maintenant protégé.
     # Si le token est invalide, l'utilisateur n'arrivera jamais ici.
     return {"email": current_user.email, "username":current_user.username, "id": current_user.id}
 
 
-# TODO logout : forcer l'expiration du token
+@router.post("/logout")
+def logout():
+    return {"message": "Successfully logged out"}
