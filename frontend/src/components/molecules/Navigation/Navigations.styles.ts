@@ -1,7 +1,6 @@
 import styled from "styled-components";
-import MyAccount from "./MyAccount";
 
-const Wrapper = styled.nav`
+export const Wrapper = styled.nav`
   display: flex;
   flex-direction: row;
   justify-content: end;
@@ -13,11 +12,3 @@ const Wrapper = styled.nav`
   width: calc(100% - 4 * 0.5em);
   border-radius: 10px;
 `;
-
-export default function Navigation() {
-  return (
-    <Wrapper>
-      <MyAccount />
-    </Wrapper>
-  )
-}
