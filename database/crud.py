@@ -34,3 +34,7 @@ def create_category(db: Session, name: str, user_id: int)->Category:
 def get_categories_by_user(db: Session, user_id: int):
     return db.query(Category).filter(Category.user_id == user_id).all()
 
+
+def is_connected(
+    
+
