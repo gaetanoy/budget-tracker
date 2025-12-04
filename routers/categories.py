@@ -13,8 +13,6 @@ from routers.auth import get_current_user
 from typing import List
 from transformers import pipeline
 import torch
-from huggingface_hub import login
-import os
 
 router = APIRouter(prefix="/categories", tags=["categories"])
 
@@ -120,7 +118,6 @@ def modify_category(
 def auto_categorize(
     category_guess: CategoryGuessRequest, db: Session = Depends(get_db), current_user=Depends(get_current_user)
 ):
-    login(os.getenv("HF_TOKEN"))
     pipe = pipeline(
         "text-generation",
         model="google/gemma-3-4b-it",

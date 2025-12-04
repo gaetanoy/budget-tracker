@@ -5,7 +5,8 @@ from contextlib import asynccontextmanager
 import logging
 
 from routers import auth, categories
-
+from huggingface_hub import login
+import os
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -17,6 +18,10 @@ async def lifespan(app: FastAPI):
         # Récupère tous les modèles héritant de base et crée une table pour chacun d'eux
         Base.metadata.create_all(bind=engine)
         logger.info("Base de données initialisée avec succès.")
+        
+        logger.info("Authentification auprès de Hugging Face Hub...")
+        login(os.getenv("HF_TOKEN"))
+        
     except Exception as e:
         logger.error(f"Erreur lors de l'initialisation de la base de données: {e}")
         raise e
