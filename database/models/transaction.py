@@ -1,4 +1,6 @@
 from sqlalchemy import Column, Date, Float, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
+
 from database.models import Base
 
 
@@ -15,7 +17,7 @@ class Transaction(Base):
         category_id (int): The ID of the category associated with the transaction.
     """
 
-    __tablename__ = "transactions"
+    __tablename__ = "transaction"
 
     transaction_id = Column(Integer, primary_key=True, index=True)
     amount = Column(Float, nullable=False)
@@ -23,3 +25,5 @@ class Transaction(Base):
     date = Column(Date, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
+    user = relationship("User", back_populates="transaction")
+    category = relationship("Category", back_populates="transaction")

@@ -11,3 +11,4 @@ class Category(Base):
     color = Column(String, nullable=True)
     icon = Column(String, nullable=True)
     user = relationship("User", back_populates="categories")
+    transactions = relationship("Transaction", back_populates="categories")
