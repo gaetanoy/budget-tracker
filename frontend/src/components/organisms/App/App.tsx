@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import * as Styled from "./App.styles";
 import Summary from "../../molecules/Summary/Summary";
 import { Movements } from "../../molecules/Movements/Movements";
