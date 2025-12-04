@@ -121,7 +121,7 @@ def auto_categorize(
     pipe = pipeline(
         "text-generation",
         model="google/gemma-3-4b-it",
-        device="cpu",
+        device="cuda" if torch.cuda.is_available() else "cpu",
         torch_dtype=torch.bfloat16,
     )
 
