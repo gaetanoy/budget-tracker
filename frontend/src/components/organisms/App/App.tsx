@@ -4,10 +4,11 @@ import Summary from "../../molecules/Summary/Summary";
 import { Movements } from "../../molecules/Movements/Movements";
 import type { MovementProps } from "../../atoms/Movement/Movement.types";
 import { AddMovementModal } from "../../molecules/AddMovementModal/AddMovementModal";
+import { AddCategoryModal } from "../../molecules/AddCategoryModal/AddCategoryModal";
 import type { Category } from "../../../types/Category";
 
 export default function App() {
-  const [categories] = useState<Category[]>([
+  const [categories, setCategories] = useState<Category[]>([
     { title: "Courses", color: "#FFD700", icon: "🛒" },
     { title: "Loyer", color: "#FF4500", icon: "🏠" },
     { title: "Salaire", color: "#32CD32", icon: "💰" },
@@ -37,11 +38,19 @@ export default function App() {
     },
   ]); // TODO API Call
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   const addMovement = (mov: MovementProps) => {
     setMovements((prev) => [...prev, mov]);
-    setIsModalOpen(false);
+    // POST API Call
+    setIsMovementModalOpen(false);
+  };
+
+  const addCategory = (cat: Category) => {
+    setCategories((prev) => [...prev, cat]);
+    // POST API Call
+    setIsCategoryModalOpen(false);
   };
 
   return (
@@ -49,17 +58,31 @@ export default function App() {
       <Summary amount={movements.reduce((acc, m) => acc + m.value, 0)} />
       <h1>Liste des mouvements</h1>
 
-      <Styled.ControlButton onClick={() => setIsModalOpen(true)}>
-        Ajouter un mouvement
-      </Styled.ControlButton>
+      <div style={{ display: "flex", gap: "10px" }}>
+        <Styled.ControlButton onClick={() => setIsMovementModalOpen(true)}>
+          Ajouter un mouvement
+        </Styled.ControlButton>
 
-      {isModalOpen && (
+        <Styled.ControlButton onClick={() => setIsCategoryModalOpen(true)}>
+          Ajouter une catégorie
+        </Styled.ControlButton>
+      </div>
+
+      {isMovementModalOpen && (
         <AddMovementModal
-          onClose={() => setIsModalOpen(false)}
+          onClose={() => setIsMovementModalOpen(false)}
           onAdd={addMovement}
           categories={categories}
         />
       )}
+
+      {isCategoryModalOpen && (
+        <AddCategoryModal
+          onClose={() => setIsCategoryModalOpen(false)}
+          onAdd={addCategory}
+        />
+      )}
+
       <Movements items={movements} />
     </Styled.Wrapper>
   );
