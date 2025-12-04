@@ -36,7 +36,7 @@ export default function App() {
   return (
     <Styled.Wrapper>
       <Summary amount={movements.reduce((acc, m) => acc + m.value, 0)} />
-      <h1>Liste des dépenses</h1>
+      <h1>Liste des mouvements</h1>
       <button onClick={() => setIsModalOpen(true)}>+</button>
 
       {isModalOpen && (
