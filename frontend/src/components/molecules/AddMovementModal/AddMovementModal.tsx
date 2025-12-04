@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import * as Styled from "./AddMovementModal.styles";
 import type { AddMovementModalProps } from "./AddMovementModal.types";
+import { DEFAULT_CATEGORY, type Category } from "../../../types/Category";
 
 export const AddMovementModal: React.FC<AddMovementModalProps> = (
   props: AddMovementModalProps
 ) => {
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState<string>("");
+  const [category, setCategory] = useState<Category>(DEFAULT_CATEGORY);
   const [date, setDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
@@ -50,8 +51,16 @@ export const AddMovementModal: React.FC<AddMovementModalProps> = (
           />
 
           <Styled.Select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            value={category.title}
+            onChange={(e) => {
+              const selectedTitle = e.target.value;
+              const selectedCategory = props.categories.find(
+                (cat) => cat.title === selectedTitle
+              );
+              if (selectedCategory) {
+                setCategory(selectedCategory);
+              }
+            }}
           >
             <option value="">-- Choisir une catégorie --</option>
             {props.categories.map((cat, index) => (

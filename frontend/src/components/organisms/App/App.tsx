@@ -1,41 +1,41 @@
+import React, { useState } from "react";
 import * as Styled from "./App.styles";
 import Summary from "../../molecules/Summary/Summary";
 import { Movements } from "../../molecules/Movements/Movements";
 import type { MovementProps } from "../../atoms/Movement/Movement.types";
-import { useState } from "react";
 import { AddMovementModal } from "../../molecules/AddMovementModal/AddMovementModal";
 import type { Category } from "../../../types/Category";
 
 export default function App() {
+  const [categories] = useState<Category[]>([
+    { title: "Courses", color: "#FFD700", icon: "🛒" },
+    { title: "Loyer", color: "#FF4500", icon: "🏠" },
+    { title: "Salaire", color: "#32CD32", icon: "💰" },
+    { title: "Loisirs", color: "#87CEEB", icon: "🎉" },
+    { title: "Transport", color: "#808080", icon: "🚌" },
+    { title: "Santé", color: "#FF69B4", icon: "❤️" },
+  ]); // TODO API Call
+
   const [movements, setMovements] = useState<MovementProps[]>([
     {
       value: -45,
       label: "Groceries",
-      category: "Food",
+      category: categories[0],
       date: new Date("2025-12-03"),
     },
     {
       value: 120,
       label: "Freelance",
-      category: "Income",
+      category: categories[2],
       date: new Date("2025-01-12"),
     },
     {
       value: 0,
       label: "No movement",
-      category: null,
+      category: undefined,
       date: new Date("2025-12-03"),
     },
   ]); // TODO API Call
-  // TODO API Call
-  const [categories] = useState<Category[]>([
-    { title: "Courses" },
-    { title: "Loyer" },
-    { title: "Salaire" },
-    { title: "Loisirs" },
-    { title: "Transport" },
-    { title: "Santé" },
-  ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
