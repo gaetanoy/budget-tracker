@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from database import engine
 from database.models import Base
+from database.default_categories import seed_default_categories
+from database.database import get_db
+
 from contextlib import asynccontextmanager
 import logging
 
@@ -21,9 +24,17 @@ async def lifespan(app: FastAPI):
         Base.metadata.create_all(bind=engine)
         logger.info("Base de données initialisée avec succès.")
         
+        # Crée les catégories par défaut si elles n'existent pas
+        db = next(get_db())
+        try:
+            count = seed_default_categories(db)
+            if count > 0:
+                logger.info(f"{count} catégories par défaut créées.")
+        finally:
+            db.close()
+        
         logger.info("Authentification auprès de Hugging Face Hub...")
         login(os.getenv("HF_TOKEN"))
-        
         
         logger.info("Chargement du modèle d'IA...")
         app.state.categorization_pipe = pipeline(
