@@ -4,6 +4,7 @@ import { Movements } from "../../molecules/Movements/Movements";
 import type { MovementProps } from "../../atoms/Movement/Movement.types";
 import { useState } from "react";
 import { AddMovementModal } from "../../molecules/AddMovementModal/AddMovementModal";
+import type { Category } from "../../../types/Category";
 
 export default function App() {
   const [movements, setMovements] = useState<MovementProps[]>([
@@ -26,6 +27,16 @@ export default function App() {
       date: new Date("2025-12-03"),
     },
   ]); // TODO API Call
+  // TODO API Call
+  const [categories] = useState<Category[]>([
+    { title: "Courses" },
+    { title: "Loyer" },
+    { title: "Salaire" },
+    { title: "Loisirs" },
+    { title: "Transport" },
+    { title: "Santé" },
+  ]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const addMovement = (mov: MovementProps) => {
@@ -46,6 +57,7 @@ export default function App() {
         <AddMovementModal
           onClose={() => setIsModalOpen(false)}
           onAdd={addMovement}
+          categories={categories}
         />
       )}
       <Movements items={movements} />

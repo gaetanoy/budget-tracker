@@ -2,13 +2,12 @@ import React, { useState } from "react";
 import * as Styled from "./AddMovementModal.styles";
 import type { AddMovementModalProps } from "./AddMovementModal.types";
 
-export const AddMovementModal: React.FC<AddMovementModalProps> = ({
-  onAdd,
-  onClose,
-}) => {
+export const AddMovementModal: React.FC<AddMovementModalProps> = (
+  props: AddMovementModalProps
+) => {
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState<string | null>(null);
+  const [category, setCategory] = useState<string>("");
   const [date, setDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
@@ -17,13 +16,13 @@ export const AddMovementModal: React.FC<AddMovementModalProps> = ({
     e.preventDefault();
     if (!label.trim() || !date || !amount) return;
 
-    onAdd({
+    props.onAdd({
       label,
       value: parseFloat(amount),
       category: category,
       date: new Date(date),
     });
-    onClose();
+    props.onClose();
   };
 
   return (
@@ -50,12 +49,17 @@ export const AddMovementModal: React.FC<AddMovementModalProps> = ({
             required
           />
 
-          <Styled.Input
-            type="text"
-            placeholder="Catégorie"
-            value={category || ""}
-            onChange={(e) => setCategory(e.target.value || null)}
-          />
+          <Styled.Select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option value="">-- Choisir une catégorie --</option>
+            {props.categories.map((cat, index) => (
+              <option key={index} value={cat.title}>
+                {cat.title}
+              </option>
+            ))}
+          </Styled.Select>
 
           <Styled.Input
             type="date"
@@ -69,7 +73,7 @@ export const AddMovementModal: React.FC<AddMovementModalProps> = ({
           </Styled.SubmitButton>
         </Styled.Form>
 
-        <Styled.CloseButton onClick={onClose}>Annuler</Styled.CloseButton>
+        <Styled.CloseButton onClick={props.onClose}>Annuler</Styled.CloseButton>
       </Styled.Modal>
     </Styled.Backdrop>
   );
