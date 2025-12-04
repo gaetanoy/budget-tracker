@@ -37,7 +37,10 @@ export default function App() {
     <Styled.Wrapper>
       <Summary amount={movements.reduce((acc, m) => acc + m.value, 0)} />
       <h1>Liste des mouvements</h1>
-      <button onClick={() => setIsModalOpen(true)}>+</button>
+
+      <Styled.ControlButton onClick={() => setIsModalOpen(true)}>
+        Ajouter un mouvement
+      </Styled.ControlButton>
 
       {isModalOpen && (
         <AddMovementModal
