@@ -1,0 +1,177 @@
+### Variables globales
+@host = http://localhost:8000
+@email = feur@feur.com
+@password = feur
+@username = feur
+
+# ---------------------------------------------------------
+# 1. AUTHENTIFICATION
+# ---------------------------------------------------------
+
+### 1.1 Inscription (Création du compte)
+POST {{host}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "username": "{{username}}",
+  "password": "{{password}}"
+}
+
+### 1.2 Connexion & Récupération du Token
+# capture et stocke le token dans la variable globale {{authToken}} pour les requêtes suivantes.
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "identifier": "{{email}}",
+  "password": "{{password}}"
+}
+> {%
+    client.global.set("authToken", response.body.access_token);
+%}
+###
+
+
+# ---------------------------------------------------------
+# 2. CRÉATION DE CATÉGORIES
+# ---------------------------------------------------------
+
+
+### 2.1 Créer une catégorie "Alimentation"
+POST {{host}}/categories/create
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Alimentation",
+  "color": "#FF5733",
+  "icon": "images/food_icon"
+}
+
+### 2.2 Créer une catégorie "Salaire"
+POST {{host}}/categories/create
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Salaire",
+  "color": "#33FF57",
+  "icon": "images/money_icon"
+}
+###
+
+# ---------------------------------------------------------
+# 3. CRÉATION DE TRANSACTIONS
+# ---------------------------------------------------------
+
+### 3.1 Transaction 1
+POST {{host}}/transactions/create
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "amount": -50.50,
+  "title": "Courses Leclerc",
+  "date": "2023-01-10",
+  "category_id": 1
+}
+
+### 3.2 Transaction 2
+POST {{host}}/transactions/create
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "amount": -25.00,
+  "title": "Burger King",
+  "date": "2023-01-15",
+  "category_id": 1
+}
+
+### 3.3 Transaction 3
+POST {{host}}/transactions/create
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "amount": 2500.00,
+  "title": "Salaire Janvier",
+  "date": "2023-01-30",
+  "category_id": 2
+}
+
+### 3.4 Transaction 4
+POST {{host}}/transactions/create
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "amount": -80.00,
+  "title": "Grand Frais",
+  "date": "2023-02-05",
+  "category_id": 1
+}
+
+### 3.5 Transaction 5
+POST {{host}}/transactions/create
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "amount": 150.00,
+  "title": "Vente Vinted",
+  "date": "2023-02-10",
+  "category_id": 2
+}
+###
+
+# ---------------------------------------------------------
+# 4. TESTS DES FILTRES
+# ---------------------------------------------------------
+
+### 4.1 Récupérer TOUTES les transactions
+GET {{host}}/transactions/
+Authorization: Bearer {{authToken}}
+
+### 4.2 Filtrer par DATE (Mois de Janvier uniquement)
+GET {{host}}/transactions/?start_date=2023-01-01&end_date=2023-01-31
+Authorization: Bearer {{authToken}}
+
+### 4.3 Filtrer par CATÉGORIE (Seulement Alimentation - ID 1)
+GET {{host}}/transactions/?category_id=1
+Authorization: Bearer {{authToken}}
+
+### 4.4 Filtrer par TYPE (Seulement les revenus "positive")
+GET {{host}}/transactions/?transaction_type=positive
+Authorization: Bearer {{authToken}}
+
+### 4.5 Filtre COMBINÉ (Dépenses de Janvier)
+GET {{host}}/transactions/?start_date=2023-01-01&end_date=2023-01-31&transaction_type=negative
+Authorization: Bearer {{authToken}}
+
+# ---------------------------------------------------------
+# 5. MODIFICATION & SUPPRESSION
+# ---------------------------------------------------------
+
+### 5.1 Modifier la transaction #1
+PATCH {{host}}/transactions/1
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "amount": -61.00,
+  "title": "Courses Leclerc"
+}
+
+### 5.2 Vérifier la modification
+GET {{host}}/transactions/
+Authorization: Bearer {{authToken}}
+
+### 5.3 Supprimer la transaction #2
+DELETE {{host}}/transactions/2
+Authorization: Bearer {{authToken}}
+
+### 5.4 Vérifier la suppression
+GET {{host}}/transactions/
+Authorization: Bearer {{authToken}}
