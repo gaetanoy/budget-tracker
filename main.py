@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from database import engine
 from database.models import Base
@@ -18,6 +19,7 @@ logger = logging.getLogger("uvicorn.error")
 async def lifespan(app: FastAPI):
     # Startup
     try:
+        load_dotenv()
         # Récupère tous les modèles héritant de base et crée une table pour chacun d'eux
         Base.metadata.create_all(bind=engine)
         logger.info("Base de données initialisée avec succès.")
