@@ -2,12 +2,40 @@ import React, { useState } from "react";
 import * as Styled from "./AddCategoryModal.styles";
 import type { AddCategoryModalProps } from "./AddCategoryModal.types";
 
+const EMOJI_LIST = [
+  "🏠",
+  "💼",
+  "🛒",
+  "🍔",
+  "🚗",
+  "✈️",
+  "🏋️",
+  "🎮",
+  "💡",
+  "💰",
+  "🎓",
+  "🎁",
+  "🏥",
+  "🎬",
+  "📱",
+  "🐶",
+  "👶",
+  "🎉",
+  "🔧",
+  "🌿",
+  "☕",
+  "🍕",
+  "🏖️",
+  "📚",
+];
+
 export const AddCategoryModal: React.FC<AddCategoryModalProps> = (
   props: AddCategoryModalProps
 ) => {
   const [title, setTitle] = useState("");
   const [icon, setIcon] = useState("");
   const [color, setColor] = useState("#000000");
+  const [showPicker, setShowPicker] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,11 +49,15 @@ export const AddCategoryModal: React.FC<AddCategoryModalProps> = (
     props.onClose();
   };
 
-  return (
-    <Styled.Backdrop>
-      <Styled.Modal>
-        <Styled.Title>Nouvelle catégorie</Styled.Title>
+  const handleEmojiSelect = (selectedEmoji: string) => {
+    setIcon(selectedEmoji);
+    setShowPicker(false);
+  };
 
+  return (
+    <Styled.Backdrop onClick={props.onClose}>
+      <Styled.Modal onClick={(e) => e.stopPropagation()}>
+        <Styled.Title>Nouvelle catégorie</Styled.Title>
         <Styled.Form onSubmit={handleSubmit}>
           <Styled.Input
             type="text"
@@ -36,16 +68,35 @@ export const AddCategoryModal: React.FC<AddCategoryModalProps> = (
             autoFocus
           />
 
-          <Styled.Input
-            type="text"
-            placeholder="Emoji (ex: 🌴)"
-            value={icon}
-            onChange={(e) => setIcon(e.target.value)}
-            maxLength={2}
-            required
-          />
+          <Styled.EmojiPickerContainer>
+            <Styled.EmojiDisplayButton
+              type="button"
+              onClick={() => setShowPicker(!showPicker)}
+            >
+              {icon ? (
+                <span>{icon} &nbsp; Emoji sélectionné</span>
+              ) : (
+                <span className="placeholder">Choisir un emoji (ex: 🌴)</span>
+              )}
+              <span>{showPicker ? "▲" : "▼"}</span>
+            </Styled.EmojiDisplayButton>
 
-          {/* Input pour la couleur */}
+            {showPicker && (
+              <Styled.EmojiGrid>
+                {EMOJI_LIST.map((emoji) => (
+                  <Styled.EmojiItem
+                    type="button"
+                    key={emoji}
+                    onClick={() => handleEmojiSelect(emoji)}
+                    $isSelected={icon === emoji}
+                  >
+                    {emoji}
+                  </Styled.EmojiItem>
+                ))}
+              </Styled.EmojiGrid>
+            )}
+          </Styled.EmojiPickerContainer>
+
           <Styled.ColorInputContainer>
             <label style={{ fontWeight: 600 }}>Couleur</label>
             <Styled.Input
@@ -53,9 +104,9 @@ export const AddCategoryModal: React.FC<AddCategoryModalProps> = (
               value={color}
               onChange={(e) => setColor(e.target.value)}
               style={{
-                padding: "5px",
-                height: "50px",
-                width: "100%",
+                padding: "4px",
+                height: "45px",
+                flex: 1,
                 cursor: "pointer",
               }}
               required
