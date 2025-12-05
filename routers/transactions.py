@@ -45,7 +45,7 @@ class MessageResponse(BaseModel):
 
 
 
-@router.post("/create", response_model=dict, status_code=status.HTTP_201_CREATED)
+@router.post("/create", response_model=TransactionResponse, status_code=status.HTTP_201_CREATED)
 def add_transaction(transaction: TransactionCreate,
                        db: Session = Depends(get_db),
                        current_user=Depends(get_current_user)):
