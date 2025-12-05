@@ -1,6 +1,5 @@
 import datetime
 from typing import List, Optional
-from sqlalchemy import Date
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
@@ -31,10 +30,10 @@ class TransactionUpdate(BaseModel):
 
 class TransactionResponse(BaseModel):
     id: int
-    amount : float
-    title : str
-    date : datetime.date
-    category_id : int
+    amount: float
+    title: str
+    date: datetime.date
+    category_id: int
 
     class Config:
         from_attributes = True  # Permet de convertir un objet SQLAlchemy en Pydantic
