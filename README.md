@@ -34,14 +34,7 @@ fastapi dev main.py
 2. Se rendre sur la page de Gemma3 4B pour demander l'accès au modèle : https://huggingface.co/google/gemma-3-4b-it
 3. Ajouter le token d'accès Huggingface dans les variables d'environnement de votre système sous le nom `HF_TOKEN`.
 
-Exemple en powershell:
-
-```powershell
-$env:HF_TOKEN="votre_token_ici"
-```
-
-Exemple en bash:
-
-```bash
-export HF_TOKEN="votre_token_ici"
+Créer un fichier `.env` à la racine du projet avec le contenu suivant
+```env
+HF_TOKEN=your_huggingface_token_here
 ```
