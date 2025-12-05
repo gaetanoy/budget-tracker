@@ -6,9 +6,10 @@ import logging
 
 from routers import auth, categories, transactions
 
-from routers import auth, categories
 from huggingface_hub import login
 import os
+from transformers import pipeline
+import torch
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -24,10 +25,25 @@ async def lifespan(app: FastAPI):
         logger.info("Authentification auprès de Hugging Face Hub...")
         login(os.getenv("HF_TOKEN"))
 
+
+        logger.info("Chargement du modèle d'IA...")
+        app.state.categorization_pipe = pipeline(
+            "text-generation",
+            model="google/gemma-3-4b-it",
+            device="cuda" if torch.cuda.is_available() else "cpu",
+            dtype=torch.bfloat16,
+        )
+        logger.info("Modèle d'IA chargé avec succès.")
+
+
     except Exception as e:
         logger.error(f"Erreur lors de l'initialisation de la base de données: {e}")
         raise e
     yield
+    # Unload le modele d'IA si l'application stoppe
+    if hasattr(app.state, "categorization_pipe"):
+        del app.state.categorization_pipe
+        logger.info("Modèle d'IA déchargé.")
 
 
 app = FastAPI(

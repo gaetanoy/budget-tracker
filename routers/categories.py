@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from database.database import get_db
@@ -11,8 +11,7 @@ from database.crud.category import (
 )
 from routers.auth import get_current_user
 from typing import List
-from transformers import pipeline
-import torch
+
 
 router = APIRouter(prefix="/categories", tags=["categories"])
 
@@ -116,15 +115,9 @@ def modify_category(
 
 @router.post("/auto-categorize", response_model=CategoryGuessResponse)
 def auto_categorize(
-    category_guess: CategoryGuessRequest, db: Session = Depends(get_db), current_user=Depends(get_current_user)
+    request: Request, category_guess: CategoryGuessRequest, db: Session = Depends(get_db), current_user=Depends(get_current_user)
 ):
-    pipe = pipeline(
-        "text-generation",
-        model="google/gemma-3-4b-it",
-        device="cpu",
-        torch_dtype=torch.bfloat16,
-    )
-
+    pipe = request.app.state.categorization_pipe
     category_names = ["Essence", "Alimentation", "Logement", "Santé", "Transport", "Divertissement", "Voyages", "Éducation", "Cadeaux", "Dons", "Services publics", "Assurances", "Impôts", "Épargne", "Investissements", "Autres"]
 
     messages = [
