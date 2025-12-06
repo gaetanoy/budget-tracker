@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import * as Styled from "./App.styles";
 import Summary from "../../molecules/Summary/Summary";
 import { Movements } from "../../molecules/Movements/Movements";
@@ -8,6 +9,8 @@ import { AddCategoryModal } from "../../molecules/AddCategoryModal/AddCategoryMo
 import type { Category } from "../../../types/Category";
 
 export default function App() {
+  const navigate = useNavigate(); // <--- Hook navigation
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [categories, setCategories] = useState<Category[]>([
     { title: "Courses", color: "#FFD700", icon: "🛒" },
     { title: "Loyer", color: "#FF4500", icon: "🏠" },
@@ -41,6 +44,17 @@ export default function App() {
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
+  // 1. Vérification auth au chargement
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login"); // <--- Redirection automatique si pas connecté
+    } else {
+      setIsAuthenticated(true);
+      // fetchData(); // Décommentez quand on reconnectera l'API
+    }
+  }, [navigate]); // Ajouter navigate aux dépendances
+
   const addMovement = (mov: MovementProps) => {
     setMovements((prev) => [...prev, mov]);
     // POST API Call
@@ -52,6 +66,7 @@ export default function App() {
     // POST API Call
     setIsCategoryModalOpen(false);
   };
+  if (!isAuthenticated) return null;
 
   return (
     <Styled.Wrapper>
