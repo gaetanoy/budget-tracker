@@ -1,3 +1,5 @@
+import os
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -11,7 +13,7 @@ import uuid
 
 
 # Configuration JWT
-SECRET_KEY = "votre_cle_secrete_tres_longue_et_aleatoire" # À mettre dans un .env
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
