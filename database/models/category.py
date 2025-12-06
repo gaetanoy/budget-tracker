@@ -1,29 +1,14 @@
-class Category:
-    """
-    Represents a category that can be applied to transactions.
-    
-    Attributes:
-        id (int): Unique identifier for the category.
-        title (str): The title of the category.
-        color (str): The color associated with the category.
-        icon (str): The icon path for the category.
-        user_id (int): The ID of the user associated with the category.
-    """
-    def __init__(self, id: int, title: str, color: str, icon: str, user_id: int):
-        self.id: int = id
-        self.title: str = title
-        self.color: str = color
-        self.icon: str = icon # chemin de l'icône
-        self.user_id: int = user_id
+from sqlalchemy import Column, Integer, String, ForeignKey
+from database.models import Base
+from sqlalchemy.orm import relationship
 
-    def __repr__(self):
-        return f"Category(id={self.id}, title={self.title}, color={self.color}, icon={self.icon})"
+class Category(Base):
+    __tablename__ = "category"
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "title": self.title,
-            "color": self.color,
-            "icon": self.icon,
-            "user_id": self.user_id
-        }
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("user.id"))
+    name = Column(String, index=True, nullable=False)
+    color = Column(String, nullable=True)
+    icon = Column(String, nullable=True)
+    user = relationship("User", back_populates="categories")
+    transactions = relationship("Transaction", back_populates="category")
