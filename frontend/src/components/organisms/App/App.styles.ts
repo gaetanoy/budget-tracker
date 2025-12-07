@@ -4,8 +4,8 @@ import styled from "styled-components";
 export const PageWrapper = styled.div`
   display: flex;
   width: 100%;
-  height: 100vh; /* Prend toute la hauteur de l'écran */
-  overflow: hidden; /* Empêche le scroll global, on veut scroller dans les zones */
+  height: 100%;
+  overflow: hidden;
   background-color: #fcfcfc;
 `;
 
@@ -13,12 +13,28 @@ export const PageWrapper = styled.div`
 export const LeftSection = styled.div`
   width: 60%;
   height: 100%;
-  padding: 40px;
-  overflow-y: auto; /* Scroll si le contenu dépasse */
+  min-height: 0;
+  overflow-y: auto;
+  padding: 40px 40px 80px 40px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-right: 1px solid #e0e0e0; /* Petite séparation visuelle */
+  border-right: 1px solid #e0e0e0;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #999;
+  }
 `;
 
 // --- SECTION DROITE (40%) ---
@@ -29,7 +45,7 @@ export const RightSection = styled.div`
   flex-direction: column;
   background-color: #ffffff;
   padding: 30px;
-  box-shadow: -5px 0 15px rgba(0,0,0,0.02); /* Ombre légère pour la profondeur */
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.02);
 `;
 
 // Conteneur des boutons en haut à droite
@@ -39,19 +55,19 @@ export const ActionsHeader = styled.div`
   margin-bottom: 20px;
   padding-bottom: 20px;
   border-bottom: 2px solid #f0f0f0;
-  
+
   /* CORRECTION ICI : Centrer les boutons */
-  justify-content: center; 
-  
+  justify-content: center;
+
   flex-shrink: 0;
 `;
 
 // Conteneur de l'historique avec Scrollbar
 export const HistoryScrollArea = styled.div`
   flex: 1; /* Prend tout l'espace restant */
-  min-height: 0; 
+  min-height: 0;
   overflow-y: auto; /* Scroll vertical */
-  
+
   width: 100%; /* Prend toute la largeur disponible */
   padding-right: 8px; /* Espace pour la scrollbar */
   padding-bottom: 40px; /* Marge en bas pour ne pas coller le dernier élément */
@@ -76,14 +92,14 @@ export const HistoryScrollArea = styled.div`
 
 export const ControlButton = styled.button`
   /* Mêmes couleurs que le Summary */
-  background-color: #F7F3E8; 
-  color: #2a2a2a; 
-  
+  background-color: #f7f3e8;
+  color: #2a2a2a;
+
   /* Bordure et Ombre "Dure" */
   border: 2px solid #2a2a2a;
   border-radius: 12px;
   box-shadow: 4px 4px 0px #2a2a2a;
-  
+
   /* Typographie */
   padding: 12px 20px;
   font-size: 0.9rem;
@@ -91,7 +107,7 @@ export const ControlButton = styled.button`
   text-transform: uppercase;
   letter-spacing: 1px;
   cursor: pointer;
-  
+
   /* Animation */
   transition: all 0.1s ease-in-out;
 
@@ -115,7 +131,7 @@ export const TabsContainer = styled.div`
   padding: 10px;
   border-radius: 12px;
   width: fit-content;
-    /* L'ombre disparaît quand le bouton est actif (effet enfoncé) */
+  /* L'ombre disparaît quand le bouton est actif (effet enfoncé) */
   box-shadow: 4px 4px 0px #2a2a2a;
   border: 2px solid #2a2a2a;
   border-radius: 12px;
@@ -130,9 +146,10 @@ export const TabButton = styled.button<{ $active: boolean }>`
   /* 2. Bordures & Ombres */
   border: 2px solid #2a2a2a;
   border-radius: 12px;
-  
+
   /* L'ombre disparaît quand le bouton est actif (effet enfoncé) */
-  box-shadow: ${({ $active }) => ($active ? "inset 2px 2px 5px rgba(0,0,0,0.2)" : "4px 4px 0px #2a2a2a")};
+  box-shadow: ${({ $active }) =>
+    $active ? "inset 2px 2px 5px rgba(0,0,0,0.2)" : "4px 4px 0px #2a2a2a"};
 
   /* 3. Typographie */
   padding: 10px 20px;
@@ -144,7 +161,8 @@ export const TabButton = styled.button<{ $active: boolean }>`
 
   /* 4. Position & Animation */
   /* Si actif, on le déplace physiquement vers le bas à droite pour simuler l'appui */
-  transform: ${({ $active }) => ($active ? "translate(2px, 2px)" : "translate(0, 0)")};
+  transform: ${({ $active }) =>
+    $active ? "translate(2px, 2px)" : "translate(0, 0)"};
   transition: all 0.15s ease-in-out;
 
   &:hover {
