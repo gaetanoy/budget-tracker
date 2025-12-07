@@ -20,7 +20,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 # Schéma pour dire à FastAPI où trouver le token (dans l'URL /auth/login)
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 class UserCreate(BaseModel):
@@ -43,7 +43,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    
+
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -63,10 +63,10 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-        
+
     # 1. On essaie de trouver par email
     user = get_user_by_email(db, email=identifier)
-    
+
     # 2. Si non trouvé, on essaie par username
     if user is None:
         user = get_user_by_username(db, username=identifier)
@@ -82,7 +82,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     salt = uuid.uuid4().hex
     # Correction du hash avec concaténation
     hashed_pw = hashlib.sha512((user.password + salt).encode()).hexdigest()
-    
+
     if get_user_by_email(db, user.email):
         raise HTTPException(status_code=400, detail="Email already registered")
 
@@ -100,7 +100,7 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, user.identifier)
     if not db_user:
         db_user = get_user_by_username(db, user.identifier)
-        
+
     if not db_user:
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
@@ -115,7 +115,7 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     access_token = create_access_token(
         data={"sub": db_user.email}, expires_delta=access_token_expires
     )
-    
+
     return {"access_token": access_token, "token_type": "bearer"}
 
 

@@ -10,7 +10,13 @@ export const Button = styled.button`
   border: solid transparent 1px;
   background-color: transparent;
   color: black;
-  transition: background-color 0.1s ease-out, color 0.1s ease-out;
+  transition:
+    background-color 0.1s ease-out,
+    color 0.1s ease-out;
+  position: fixed;
+  top: 0;
+  right: 0;
+  margin: 0.2em;
 
   &:hover {
     cursor: pointer;

@@ -30,7 +30,7 @@ const EMOJI_LIST = [
 ];
 
 export const AddCategoryModal: React.FC<AddCategoryModalProps> = (
-  props: AddCategoryModalProps
+  props: AddCategoryModalProps,
 ) => {
   const [title, setTitle] = useState("");
   const [icon, setIcon] = useState("");
