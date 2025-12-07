@@ -1,16 +1,22 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import * as Styled from "./App.styles";
+
 import Summary from "../../molecules/Summary/Summary";
 import { Movements } from "../../molecules/Movements/Movements";
 import type { MovementProps } from "../../atoms/Movement/Movement.types";
 import { AddMovementModal } from "../../molecules/AddMovementModal/AddMovementModal";
 import { AddCategoryModal } from "../../molecules/AddCategoryModal/AddCategoryModal";
 import type { Category } from "../../../types/Category";
+import { MonthYearPicker } from "../../molecules/MonthYearPicker/MonthYearPicker";
 
 export default function App() {
-  const navigate = useNavigate(); // <--- Hook navigation
+  const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState(12);
+  const [selectedYear, setSelectedYear] = useState(2025);
+  const [activeTab, setActiveTab] = useState<'all' | 'expense' | 'income'>('all');
+
   const [categories, setCategories] = useState<Category[]>([
     { title: "Courses", color: "#FFD700", icon: "🛒" },
     { title: "Loyer", color: "#FF4500", icon: "🏠" },
@@ -18,70 +24,109 @@ export default function App() {
     { title: "Loisirs", color: "#87CEEB", icon: "🎉" },
     { title: "Transport", color: "#808080", icon: "🚌" },
     { title: "Santé", color: "#FF69B4", icon: "❤️" },
-  ]); // TODO API Call
+    { title: "Cadeaux", color: "#ff8a80", icon: "🎁" },
+    { title: "Famille", color: "#ba68c8", icon: "👶" },
+  ]);
 
   const [movements, setMovements] = useState<MovementProps[]>([
-    {
-      value: -45,
-      label: "Groceries",
-      category: categories[0],
-      date: new Date("2025-12-03"),
-    },
-    {
-      value: 120,
-      label: "Freelance",
-      category: categories[2],
-      date: new Date("2025-01-12"),
-    },
-    {
-      value: 0,
-      label: "No movement",
-      category: undefined,
-      date: new Date("2025-12-03"),
-    },
-  ]); // TODO API Call
+    { value: -98, label: "Resto", category: categories[1], date: new Date("2025-12-03") },
+    { value: -30, label: "Ciné", category: categories[3], date: new Date("2025-12-05") },
+    { value: -89, label: "Navigo", category: categories[4], date: new Date("2025-12-01") },
+    { value: -2500, label: "Loyer", category: categories[1], date: new Date("2025-12-01") },
+    { value: 2500, label: "Salaire", category: categories[2], date: new Date("2025-12-28") },
+  ]);
 
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
-  // 1. Vérification auth au chargement
+  // --- FILTRES ---
+  const movementsByDate = movements.filter((mov) => {
+    const movDate = new Date(mov.date);
+    return (
+      movDate.getMonth() + 1 === selectedMonth &&
+      movDate.getFullYear() === selectedYear
+    );
+  });
+
+  const displayedMovements = movementsByDate.filter((mov) => {
+    if (activeTab === 'expense') return mov.value < 0;
+    if (activeTab === 'income') return mov.value > 0;
+    return true;
+  });
+
+  const chartData = movementsByDate.filter(mov => {
+      if (activeTab === 'income') return mov.value > 0;
+      return mov.value < 0;
+  });
+
+  const globalBalance = movements.reduce((acc, m) => acc + m.value, 0);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login"); // <--- Redirection automatique si pas connecté
-    } else {
-      setIsAuthenticated(true);
-      // fetchData(); // Décommentez quand on reconnectera l'API
-    }
-  }, [navigate]); // Ajouter navigate aux dépendances
+    if (!token) navigate("/login");
+    else setIsAuthenticated(true);
+  }, [navigate]);
 
   const addMovement = (mov: MovementProps) => {
-    setMovements((prev) => [...prev, mov]);
-    // POST API Call
+    setMovements((prev) => [mov, ...prev]);
     setIsMovementModalOpen(false);
   };
 
   const addCategory = (cat: Category) => {
     setCategories((prev) => [...prev, cat]);
-    // POST API Call
     setIsCategoryModalOpen(false);
   };
+
   if (!isAuthenticated) return null;
 
   return (
-    <Styled.Wrapper>
-      <Summary amount={movements.reduce((acc, m) => acc + m.value, 0)} />
-      <h1>Liste des mouvements</h1>
+    <Styled.PageWrapper>
 
-      <div style={{ display: "flex", gap: "10px" }}>
-        <Styled.ControlButton onClick={() => setIsMovementModalOpen(true)}>
-          Ajouter un mouvement
-        </Styled.ControlButton>
+      <Styled.LeftSection>
+        <div style={{width: "100%", display:"flex", justifyContent:"flex-end", marginBottom: 10}}>
+        </div>
 
-        <Styled.ControlButton onClick={() => setIsCategoryModalOpen(true)}>
-          Ajouter une catégorie
-        </Styled.ControlButton>
-      </div>
+        <div style={{ marginTop: 10, width: "100%", display: "flex", justifyContent: "center" }}>
+            <MonthYearPicker
+                selectedMonth={selectedMonth}
+                selectedYear={selectedYear}
+                onMonthChange={setSelectedMonth}
+                onYearChange={setSelectedYear}
+            />
+        </div>
+
+        <Styled.TabsContainer>
+          <Styled.TabButton $active={activeTab === 'all'} onClick={() => setActiveTab('all')}>Tout</Styled.TabButton>
+          <Styled.TabButton $active={activeTab === 'expense'} onClick={() => setActiveTab('expense')}>Dépenses</Styled.TabButton>
+          <Styled.TabButton $active={activeTab === 'income'} onClick={() => setActiveTab('income')}>Entrées</Styled.TabButton>
+        </Styled.TabsContainer>
+
+        <Summary
+            data={chartData}
+            globalBalance={globalBalance}
+            activeTab={activeTab}
+        />
+
+      </Styled.LeftSection>
+
+      <Styled.RightSection>
+        <Styled.ActionsHeader>
+            <Styled.ControlButton onClick={() => setIsCategoryModalOpen(true)}>
+                + Catégorie
+            </Styled.ControlButton>
+            <Styled.ControlButton onClick={() => setIsMovementModalOpen(true)}>
+                + Transaction
+            </Styled.ControlButton>
+        </Styled.ActionsHeader>
+
+        <h3 style={{marginTop: 0, marginBottom: 15}}>
+            Historique ({displayedMovements.length})
+        </h3>
+
+        <Styled.HistoryScrollArea>
+            <Movements items={displayedMovements} />
+        </Styled.HistoryScrollArea>
+      </Styled.RightSection>
 
       {isMovementModalOpen && (
         <AddMovementModal
@@ -98,7 +143,6 @@ export default function App() {
         />
       )}
 
-      <Movements items={movements} />
-    </Styled.Wrapper>
+    </Styled.PageWrapper>
   );
 }

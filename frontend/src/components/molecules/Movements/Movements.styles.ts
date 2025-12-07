@@ -4,8 +4,10 @@ export const List = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  width: 75%;
-  padding-bottom: 20px;
+  width: 80%;
+  padding-bottom: 0;
+    margin-left: 20px;
+    scroll-behavior: auto;
 `;
 
 export const DateGroup = styled.div`
