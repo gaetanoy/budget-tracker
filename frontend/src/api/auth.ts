@@ -1,4 +1,4 @@
-import fetchApi from "./fetch";
+import fetchApi, { getAuthHeaders } from "./fetch";
 
 export interface UserCreate {
   email: string;
@@ -37,7 +37,11 @@ export async function logout() {
 export async function getProfile(
   getAuth: () => string,
 ): Promise<ProfileResponse> {
-  return await fetchApi("/auth/account", "get", undefined, "application/json", {
-    Authorization: getAuth(),
-  });
+  return await fetchApi(
+    "/auth/account",
+    "get",
+    undefined,
+    "application/json",
+    getAuthHeaders(getAuth),
+  );
 }

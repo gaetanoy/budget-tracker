@@ -41,22 +41,14 @@ function UserInfo({ userInfo }: { userInfo: Promise<ProfileResponse> }) {
 export default function Account() {
   const navigate = useNavigate();
 
-  const { logout, getAuthorization } = useAuth();
-
-  const getAuth = () => {
-    const auth = getAuthorization();
-    if (auth === null) {
-      throw new Error("Authorization shouldn't be null here");
-    }
-    return auth;
-  };
+  const { logout, getAuthorizationNonNull } = useAuth();
 
   const handleLogout = async () => {
     await logout();
     navigate("/");
   };
 
-  const userInfo = getProfile(getAuth);
+  const userInfo = getProfile(getAuthorizationNonNull);
 
   return (
     <Styled.Container>

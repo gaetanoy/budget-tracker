@@ -1,5 +1,11 @@
 const HOST = "http://localhost:8000";
 
+export function getAuthHeaders(getAuth: () => string): HeadersInit {
+  return {
+    Authorization: getAuth(),
+  };
+}
+
 export default async function fetchApi<B, R>(
   path: string,
   method: RequestInit["method"],

@@ -21,10 +21,19 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
     return localStorage.getItem("authorization");
   };
 
+  const getAuthNonNull = () => {
+    const auth = getAuth();
+    if (auth === null) {
+      throw new Error("Authorization shouldn't be null here");
+    }
+    return auth;
+  };
+
   return (
     <AuthContext
       value={{
         getAuthorization: getAuth,
+        getAuthorizationNonNull: getAuthNonNull,
         login,
         logout,
       }}

@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useState } from "react";
 import * as Styled from "./App.styles";
 
 import Summary from "../../molecules/Summary/Summary";
@@ -11,11 +10,11 @@ import type { Category } from "../../../types/Category";
 import { MonthYearPicker } from "../../molecules/MonthYearPicker/MonthYearPicker";
 
 export default function App() {
-  const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(12);
   const [selectedYear, setSelectedYear] = useState(2025);
-  const [activeTab, setActiveTab] = useState<'all' | 'expense' | 'income'>('all');
+  const [activeTab, setActiveTab] = useState<"all" | "expense" | "income">(
+    "all",
+  );
 
   const [categories, setCategories] = useState<Category[]>([
     { title: "Courses", color: "#FFD700", icon: "🛒" },
@@ -29,11 +28,36 @@ export default function App() {
   ]);
 
   const [movements, setMovements] = useState<MovementProps[]>([
-    { value: -98, label: "Resto", category: categories[1], date: new Date("2025-12-03") },
-    { value: -30, label: "Ciné", category: categories[3], date: new Date("2025-12-05") },
-    { value: -89, label: "Navigo", category: categories[4], date: new Date("2025-12-01") },
-    { value: -2500, label: "Loyer", category: categories[1], date: new Date("2025-12-01") },
-    { value: 2500, label: "Salaire", category: categories[2], date: new Date("2025-12-28") },
+    {
+      value: -98,
+      label: "Resto",
+      category: categories[1],
+      date: new Date("2025-12-03"),
+    },
+    {
+      value: -30,
+      label: "Ciné",
+      category: categories[3],
+      date: new Date("2025-12-05"),
+    },
+    {
+      value: -89,
+      label: "Navigo",
+      category: categories[4],
+      date: new Date("2025-12-01"),
+    },
+    {
+      value: -2500,
+      label: "Loyer",
+      category: categories[1],
+      date: new Date("2025-12-01"),
+    },
+    {
+      value: 2500,
+      label: "Salaire",
+      category: categories[2],
+      date: new Date("2025-12-28"),
+    },
   ]);
 
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
@@ -49,23 +73,17 @@ export default function App() {
   });
 
   const displayedMovements = movementsByDate.filter((mov) => {
-    if (activeTab === 'expense') return mov.value < 0;
-    if (activeTab === 'income') return mov.value > 0;
+    if (activeTab === "expense") return mov.value < 0;
+    if (activeTab === "income") return mov.value > 0;
     return true;
   });
 
-  const chartData = movementsByDate.filter(mov => {
-      if (activeTab === 'income') return mov.value > 0;
-      return mov.value < 0;
+  const chartData = movementsByDate.filter((mov) => {
+    if (activeTab === "income") return mov.value > 0;
+    return mov.value < 0;
   });
 
   const globalBalance = movements.reduce((acc, m) => acc + m.value, 0);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) navigate("/login");
-    else setIsAuthenticated(true);
-  }, [navigate]);
 
   const addMovement = (mov: MovementProps) => {
     setMovements((prev) => [mov, ...prev]);
@@ -77,52 +95,69 @@ export default function App() {
     setIsCategoryModalOpen(false);
   };
 
-  if (!isAuthenticated) return null;
-
   return (
     <Styled.PageWrapper>
-
       <Styled.LeftSection>
-
-        <div style={{ marginTop: 10, width: "100%", display: "flex", justifyContent: "center" }}>
-            <MonthYearPicker
-                selectedMonth={selectedMonth}
-                selectedYear={selectedYear}
-                onMonthChange={setSelectedMonth}
-                onYearChange={setSelectedYear}
-            />
+        <div
+          style={{
+            marginTop: 10,
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <MonthYearPicker
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+            onMonthChange={setSelectedMonth}
+            onYearChange={setSelectedYear}
+          />
         </div>
 
         <Styled.TabsContainer>
-          <Styled.TabButton $active={activeTab === 'all'} onClick={() => setActiveTab('all')}>Tout</Styled.TabButton>
-          <Styled.TabButton $active={activeTab === 'expense'} onClick={() => setActiveTab('expense')}>Dépenses</Styled.TabButton>
-          <Styled.TabButton $active={activeTab === 'income'} onClick={() => setActiveTab('income')}>Entrées</Styled.TabButton>
+          <Styled.TabButton
+            $active={activeTab === "all"}
+            onClick={() => setActiveTab("all")}
+          >
+            Tout
+          </Styled.TabButton>
+          <Styled.TabButton
+            $active={activeTab === "expense"}
+            onClick={() => setActiveTab("expense")}
+          >
+            Dépenses
+          </Styled.TabButton>
+          <Styled.TabButton
+            $active={activeTab === "income"}
+            onClick={() => setActiveTab("income")}
+          >
+            Entrées
+          </Styled.TabButton>
         </Styled.TabsContainer>
 
         <Summary
-            data={chartData}
-            globalBalance={globalBalance}
-            activeTab={activeTab}
+          data={chartData}
+          globalBalance={globalBalance}
+          activeTab={activeTab}
         />
-
       </Styled.LeftSection>
 
       <Styled.RightSection>
         <Styled.ActionsHeader>
-            <Styled.ControlButton onClick={() => setIsCategoryModalOpen(true)}>
-                + Catégorie
-            </Styled.ControlButton>
-            <Styled.ControlButton onClick={() => setIsMovementModalOpen(true)}>
-                + Transaction
-            </Styled.ControlButton>
+          <Styled.ControlButton onClick={() => setIsCategoryModalOpen(true)}>
+            + Catégorie
+          </Styled.ControlButton>
+          <Styled.ControlButton onClick={() => setIsMovementModalOpen(true)}>
+            + Transaction
+          </Styled.ControlButton>
         </Styled.ActionsHeader>
 
-        <h3 style={{marginTop: 0, marginBottom: 15}}>
-            Historique ({displayedMovements.length})
+        <h3 style={{ marginTop: 0, marginBottom: 15 }}>
+          Historique ({displayedMovements.length})
         </h3>
 
         <Styled.HistoryScrollArea>
-            <Movements items={displayedMovements} />
+          <Movements items={displayedMovements} />
         </Styled.HistoryScrollArea>
       </Styled.RightSection>
 
@@ -130,7 +165,6 @@ export default function App() {
         <AddMovementModal
           onClose={() => setIsMovementModalOpen(false)}
           onAdd={addMovement}
-          categories={categories}
         />
       )}
 
@@ -140,7 +174,6 @@ export default function App() {
           onAdd={addCategory}
         />
       )}
-
     </Styled.PageWrapper>
   );
 }
