@@ -83,8 +83,6 @@ export default function App() {
     <Styled.PageWrapper>
 
       <Styled.LeftSection>
-        <div style={{width: "100%", display:"flex", justifyContent:"flex-end", marginBottom: 10}}>
-        </div>
 
         <div style={{ marginTop: 10, width: "100%", display: "flex", justifyContent: "center" }}>
             <MonthYearPicker

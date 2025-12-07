@@ -1,4 +1,3 @@
-import React from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Label } from "recharts";
 import styled from "styled-components";
 import type { MovementProps } from "../../atoms/Movement/Movement.types";
@@ -19,16 +18,6 @@ const Card = styled.div`
   align-items: center;
   position: relative;
   margin-bottom: 20px;
-`;
-
-const AppTitle = styled.h2`
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #2a2a2a;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  margin-bottom: 10px; /* Un peu d'espace sous le titre */
 `;
 
 const ChartContainer = styled.div`
@@ -81,7 +70,6 @@ export default function Summary({ data, globalBalance, activeTab }: Props) {
 
   return (
     <Card>
-      <AppTitle>ANAS</AppTitle>
 
       <ChartContainer>
         <ResponsiveContainer width="100%" height="100%">

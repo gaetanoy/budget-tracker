@@ -75,23 +75,35 @@ export const HistoryScrollArea = styled.div`
 // --- ELEMENTS EXISTANTS (Réutilisés) ---
 
 export const ControlButton = styled.button`
-  background: #2a2a2a; /* Changement style pour être plus visible */
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 700;
+  /* Mêmes couleurs que le Summary */
+  background-color: #F7F3E8; 
+  color: #2a2a2a; 
+  
+  /* Bordure et Ombre "Dure" */
+  border: 2px solid #2a2a2a;
+  border-radius: 12px;
+  box-shadow: 4px 4px 0px #2a2a2a;
+  
+  /* Typographie */
   padding: 12px 20px;
-  border-radius: 10px;
-  transition: transform 0.1s ease, background 0.2s;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  
+  /* Animation */
+  transition: all 0.1s ease-in-out;
 
   &:hover {
-    background: #000;
-    transform: translateY(-2px);
+    background-color: #ffffff; /* S'éclaircit légèrement au survol */
+    transform: translate(-2px, -2px); /* Se déplace vers le haut/gauche */
+    box-shadow: 6px 6px 0px #2a2a2a; /* L'ombre grandit */
   }
+
   &:active {
-    transform: translateY(1px);
+    transform: translate(2px, 2px); /* S'enfonce comme un bouton physique */
+    box-shadow: 0px 0px 0px #2a2a2a; /* L'ombre disparaît */
   }
 `;
 
@@ -100,26 +112,49 @@ export const TabsContainer = styled.div`
   justify-content: center;
   gap: 8px;
   margin-bottom: 20px;
-  background-color: #e0e0e0;
-  padding: 4px;
+  padding: 10px;
   border-radius: 12px;
   width: fit-content;
+    /* L'ombre disparaît quand le bouton est actif (effet enfoncé) */
+  box-shadow: 4px 4px 0px #2a2a2a;
+  border: 2px solid #2a2a2a;
+  border-radius: 12px;
 `;
 
 export const TabButton = styled.button<{ $active: boolean }>`
-  padding: 8px 24px;
-  border-radius: 8px;
-  border: none;
-  font-size: 0.9rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  /* 1. Couleurs & Fond */
+  /* Si actif : Fond Noir / Texte Beige. Si inactif : Fond Beige / Texte Noir */
+  background-color: ${({ $active }) => ($active ? "#2a2a2a" : "#F7F3E8")};
+  color: ${({ $active }) => ($active ? "#F7F3E8" : "#2a2a2a")};
+
+  /* 2. Bordures & Ombres */
+  border: 2px solid #2a2a2a;
+  border-radius: 12px;
   
-  background-color: ${({ $active }) => ($active ? "#2a2a2a" : "transparent")};
-  color: ${({ $active }) => ($active ? "#ffffff" : "#666")};
-  box-shadow: ${({ $active }) => ($active ? "0px 2px 4px rgba(0,0,0,0.2)" : "none")};
+  /* L'ombre disparaît quand le bouton est actif (effet enfoncé) */
+  box-shadow: ${({ $active }) => ($active ? "inset 2px 2px 5px rgba(0,0,0,0.2)" : "4px 4px 0px #2a2a2a")};
+
+  /* 3. Typographie */
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+
+  /* 4. Position & Animation */
+  /* Si actif, on le déplace physiquement vers le bas à droite pour simuler l'appui */
+  transform: ${({ $active }) => ($active ? "translate(2px, 2px)" : "translate(0, 0)")};
+  transition: all 0.15s ease-in-out;
 
   &:hover {
-    color: ${({ $active }) => ($active ? "#ffffff" : "#000")};
+    /* Au survol (seulement si non actif), on lève légèrement le bouton */
+    ${({ $active }) =>
+      !$active &&
+      `
+      background-color: #ffffff;
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px #2a2a2a;
+    `}
   }
 `;
