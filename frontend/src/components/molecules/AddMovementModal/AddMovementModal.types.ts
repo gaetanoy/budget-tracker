@@ -1,6 +1,6 @@
-import type { MovementProps } from "../../atoms/Movement/Movement.types";
+import type { Transaction } from "../../atoms/Movement/Movement.types";
 
 export type AddMovementModalProps = {
-  onAdd: (movement: MovementProps) => void;
+  onAdd: (movement: Omit<Transaction, "id">) => void;
   onClose: () => void;
 };

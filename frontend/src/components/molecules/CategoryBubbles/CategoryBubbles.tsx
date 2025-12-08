@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import type { MovementProps } from "../../atoms/Movement/Movement.types";
+import type { Transaction } from "../../atoms/Movement/Movement.types";
 
 const Grid = styled.div`
   display: flex;
@@ -37,7 +37,7 @@ const Circle = styled.div<{ $color: string }>`
   font-size: 1.5rem;
   margin-bottom: 5px;
   border: 2px solid ${({ $color }) => $color};
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 `;
 
 const Amount = styled.span<{ $isExpense: boolean }>`
@@ -47,17 +47,17 @@ const Amount = styled.span<{ $isExpense: boolean }>`
 `;
 
 type Props = {
-  movements: MovementProps[];
-  type: 'expense' | 'income' | 'all';
+  movements: Transaction[];
+  type: "expense" | "income" | "all";
 };
 
 export const CategoryBubbles = ({ movements, type }: Props) => {
   // 1. Agréger les données par catégorie
   const aggregated = movements.reduce((acc, curr) => {
     // Filtrage selon le type demandé
-    if (type === 'expense' && curr.value >= 0) return acc;
-    if (type === 'income' && curr.value <= 0) return acc;
-    if (type === 'all' && curr.value >= 0) return acc; // Par défaut "Tout" montre les dépenses
+    if (type === "expense" && curr.value >= 0) return acc;
+    if (type === "income" && curr.value <= 0) return acc;
+    if (type === "all" && curr.value >= 0) return acc; // Par défaut "Tout" montre les dépenses
 
     const categoryId = curr.category?.title || "Autres";
 
@@ -66,7 +66,7 @@ export const CategoryBubbles = ({ movements, type }: Props) => {
         title: categoryId,
         color: curr.category?.color || "#ccc",
         icon: curr.category?.icon || "?",
-        total: 0
+        total: 0,
       };
     }
     acc[categoryId].total += curr.value;
@@ -82,9 +82,7 @@ export const CategoryBubbles = ({ movements, type }: Props) => {
       {categories.map((cat) => (
         <BubbleContainer key={cat.title}>
           <Label>{cat.title}</Label>
-          <Circle $color={cat.color}>
-            {cat.icon}
-          </Circle>
+          <Circle $color={cat.color}>{cat.icon}</Circle>
           <Amount $isExpense={cat.total < 0}>
             {Math.abs(cat.total).toFixed(0)} €
           </Amount>

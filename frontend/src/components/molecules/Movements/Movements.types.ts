@@ -1,5 +1,6 @@
-import type { MovementProps } from "../../atoms/Movement/Movement.types";
+import type { Transaction } from "../../atoms/Movement/Movement.types";
 
 export type MovementsProps = {
-  items: MovementProps[];
+  items: Transaction[];
+  onDelete: (movement: Transaction) => void;
 };

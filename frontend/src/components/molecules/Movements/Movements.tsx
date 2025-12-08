@@ -2,7 +2,7 @@ import { Movement } from "../../atoms/Movement/Movement";
 import { type MovementsProps } from "./Movements.types";
 import * as Styled from "./Movements.styles";
 
-export const Movements: React.FC<MovementsProps> = ({ items }) => {
+export const Movements: React.FC<MovementsProps> = ({ items, onDelete }) => {
   const formatDateLabel = (date: Date): string => {
     const today = new Date();
     const d = new Date(date);
@@ -39,7 +39,7 @@ export const Movements: React.FC<MovementsProps> = ({ items }) => {
           <p className="date">{dateLabel}</p>
 
           {movements.map((item, index) => (
-            <Movement key={index} {...item} />
+            <Movement key={index} {...item} onDelete={() => onDelete(item)} />
           ))}
         </Styled.DateGroup>
       ))}

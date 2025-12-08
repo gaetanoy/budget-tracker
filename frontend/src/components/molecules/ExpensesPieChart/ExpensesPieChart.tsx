@@ -1,7 +1,14 @@
 import React from "react";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Label } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+  Label,
+} from "recharts";
 import styled from "styled-components";
-import type { MovementProps } from "../../atoms/Movement/Movement.types";
+import type { Transaction } from "../../atoms/Movement/Movement.types";
 
 const ChartWrapper = styled.div`
   width: 100%;
@@ -14,7 +21,7 @@ const ChartWrapper = styled.div`
 `;
 
 type Props = {
-  data: MovementProps[];
+  data: Transaction[];
   title?: string; // Gardé pour compatibilité mais on l'affiche différemment
 };
 
@@ -63,18 +70,22 @@ export const ExpensesPieChart: React.FC<Props> = ({ data, title }) => {
               value={title?.split(" ")[0] || "Total"}
               position="center"
               dy={-10}
-              style={{ fontSize: '14px', fill: '#666', fontWeight: 600 }}
+              style={{ fontSize: "14px", fill: "#666", fontWeight: 600 }}
             />
             <Label
               value={`${totalAmount.toFixed(0)} €`}
               position="center"
               dy={15}
-              style={{ fontSize: '24px', fill: '#2a2a2a', fontWeight: '800' }}
+              style={{ fontSize: "24px", fill: "#2a2a2a", fontWeight: "800" }}
             />
           </Pie>
           <Tooltip
             formatter={(value: number) => `${value.toFixed(2)} €`}
-            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}
+            contentStyle={{
+              borderRadius: "12px",
+              border: "none",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+            }}
           />
         </PieChart>
       </ResponsiveContainer>

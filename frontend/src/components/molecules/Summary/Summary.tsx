@@ -7,7 +7,7 @@ import {
   Label,
 } from "recharts";
 import styled from "styled-components";
-import type { MovementProps } from "../../atoms/Movement/Movement.types";
+import type { Transaction } from "../../atoms/Movement/Movement.types";
 import { CategoryBubbles } from "../CategoryBubbles/CategoryBubbles"; // <--- Import des bulles
 
 // --- STYLES ---
@@ -35,7 +35,7 @@ const ChartContainer = styled.div`
 
 // --- TYPES ---
 type Props = {
-  data: MovementProps[];
+  data: Transaction[];
   globalBalance: number;
   activeTab: "all" | "expense" | "income";
 };

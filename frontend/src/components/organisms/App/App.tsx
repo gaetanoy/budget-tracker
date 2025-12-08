@@ -3,13 +3,17 @@ import * as Styled from "./App.styles";
 
 import Summary from "../../molecules/Summary/Summary";
 import { Movements } from "../../molecules/Movements/Movements";
-import type { MovementProps } from "../../atoms/Movement/Movement.types";
+import type { Transaction } from "../../atoms/Movement/Movement.types";
 import { AddMovementModal } from "../../molecules/AddMovementModal/AddMovementModal";
 import { AddCategoryModal } from "../../molecules/AddCategoryModal/AddCategoryModal";
 import type { Category } from "../../../types/Category";
 import { MonthYearPicker } from "../../molecules/MonthYearPicker/MonthYearPicker";
 import { useAuth } from "../../../context/auth";
-import { createTransaction, getTransactions } from "../../../api/transaction";
+import {
+  createTransaction,
+  getTransactions,
+  removeTransaction,
+} from "../../../api/transaction";
 import { getCategories } from "../../../api/category";
 
 export default function App() {
@@ -23,13 +27,13 @@ export default function App() {
 
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const [movements, setMovements] = useState<MovementProps[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   // --- FILTRES ---
-  const movementsByDate = movements.filter((mov) => {
+  const movementsByDate = transactions.filter((mov) => {
     const movDate = new Date(mov.date);
     return (
       movDate.getMonth() + 1 === selectedMonth &&
@@ -48,9 +52,9 @@ export default function App() {
     return mov.value < 0;
   });
 
-  const globalBalance = movements.reduce((acc, m) => acc + m.value, 0);
+  const globalBalance = transactions.reduce((acc, m) => acc + m.value, 0);
 
-  const addMovement = async (mov: MovementProps) => {
+  const addMovement = async (mov: Omit<Transaction, "id">) => {
     try {
       if (!mov.category) throw new Error("Missing category");
 
@@ -64,17 +68,27 @@ export default function App() {
         getAuthorizationNonNull
       );
 
-      const formatted: MovementProps = {
+      const formatted: Transaction = {
+        id: created.id,
         label: created.title,
         value: created.amount,
         date: new Date(created.date),
         category: mov.category,
       };
 
-      setMovements((prev) => [formatted, ...prev]);
+      setTransactions((prev) => [formatted, ...prev]);
       setIsMovementModalOpen(false);
     } catch (error) {
       console.error("Error creating movement:", error);
+    }
+  };
+
+  const deleteMovement = async (movement: Transaction) => {
+    try {
+      await removeTransaction(movement.id, getAuthorizationNonNull);
+      setTransactions((prev) => prev.filter((m) => m !== movement));
+    } catch (e) {
+      console.error("Error deleting movement:", e);
     }
   };
 
@@ -92,13 +106,14 @@ export default function App() {
         const transactions = await getTransactions({}, getAuthorizationNonNull);
 
         const mapped = transactions.map((t) => ({
+          id: t.id,
           label: t.title,
           value: t.amount,
           date: new Date(t.date),
           category: categories.find((c) => c.id === t.category_id),
         }));
 
-        setMovements(mapped);
+        setTransactions(mapped);
       } catch (error) {
         console.error("Error while fetching the transactions:", error);
       }
@@ -139,13 +154,14 @@ export default function App() {
       const transactions = await getTransactions({}, getAuthorizationNonNull);
 
       const mapped = transactions.map((t) => ({
+        id: t.id,
         label: t.title,
         value: t.amount,
         date: new Date(t.date),
         category: categories.find((c) => c.id === t.category_id),
       }));
 
-      setMovements(mapped);
+      setTransactions(mapped);
     };
 
     fetchTransactions();
@@ -213,7 +229,7 @@ export default function App() {
         </h3>
 
         <Styled.HistoryScrollArea>
-          <Movements items={displayedMovements} />
+          <Movements items={displayedMovements} onDelete={deleteMovement} />
         </Styled.HistoryScrollArea>
       </Styled.RightSection>
 
