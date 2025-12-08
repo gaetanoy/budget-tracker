@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router";
 import * as Styled from "./Register.styles";
+import { register } from "../../../api/auth";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -8,11 +9,14 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Simulation d'inscription réussie
-    console.log("Inscription:", { username, email, password });
+    await register({
+      email,
+      username,
+      password,
+    });
 
     alert("Compte créé avec succès ! Veuillez vous connecter.");
     navigate("/login");

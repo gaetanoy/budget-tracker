@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import * as Styled from "./AddCategoryModal.styles";
 import type { AddCategoryModalProps } from "./AddCategoryModal.types";
+import { createCategory, type CategoryCreate } from "../../../api/category";
+import { useAuth } from "../../../context/auth";
 
 const EMOJI_LIST = [
   "🏠",
@@ -30,22 +32,26 @@ const EMOJI_LIST = [
 ];
 
 export const AddCategoryModal: React.FC<AddCategoryModalProps> = (
-  props: AddCategoryModalProps
+  props: AddCategoryModalProps,
 ) => {
+  const { getAuthorizationNonNull } = useAuth();
+
   const [title, setTitle] = useState("");
   const [icon, setIcon] = useState("");
   const [color, setColor] = useState("#000000");
   const [showPicker, setShowPicker] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !icon.trim()) return;
 
-    props.onAdd({
-      title,
+    const newCategory = {
       icon,
+      name: title,
       color,
-    });
+    } satisfies CategoryCreate;
+
+    await createCategory(newCategory, getAuthorizationNonNull);
     props.onClose();
   };
 

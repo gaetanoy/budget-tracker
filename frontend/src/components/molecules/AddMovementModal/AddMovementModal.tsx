@@ -1,16 +1,60 @@
-import React, { useState } from "react";
+import React, { Suspense, use, useState } from "react";
 import * as Styled from "./AddMovementModal.styles";
 import type { AddMovementModalProps } from "./AddMovementModal.types";
 import { DEFAULT_CATEGORY, type Category } from "../../../types/Category";
+import { getCategories, type CategoryResponse } from "../../../api/category";
+import { useAuth } from "../../../context/auth";
+
+function SelectCategory({
+  category,
+  setCategory,
+  categoriesPromise,
+}: {
+  category: Category;
+  setCategory: (cat: Category) => void;
+  categoriesPromise: Promise<CategoryResponse[]>;
+}) {
+  const categoriesRaw = use(categoriesPromise);
+  const categories = categoriesRaw.map(
+    (category) =>
+      ({
+        title: category.name,
+        color: category.color ?? "",
+        icon: category.icon ?? "",
+      }) satisfies Category,
+  );
+
+  return (
+    <Styled.Select
+      value={category.title}
+      onChange={(e) => {
+        const selectedTitle = e.target.value;
+        const selectedCategory = categories.find(
+          (cat) => cat.title === selectedTitle,
+        );
+        if (selectedCategory) {
+          setCategory(selectedCategory);
+        }
+      }}
+    >
+      <option value="">-- Choisir une catégorie --</option>
+      {categories.map((cat, index) => (
+        <option key={index} value={cat.title}>
+          {cat.title}
+        </option>
+      ))}
+    </Styled.Select>
+  );
+}
 
 export const AddMovementModal: React.FC<AddMovementModalProps> = (
-  props: AddMovementModalProps
+  props: AddMovementModalProps,
 ) => {
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState<Category>(DEFAULT_CATEGORY);
   const [date, setDate] = useState<string>(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().split("T")[0],
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -25,6 +69,10 @@ export const AddMovementModal: React.FC<AddMovementModalProps> = (
     });
     props.onClose();
   };
+
+  const { getAuthorizationNonNull } = useAuth();
+
+  const categories = getCategories(getAuthorizationNonNull);
 
   return (
     <Styled.Backdrop>
@@ -50,25 +98,13 @@ export const AddMovementModal: React.FC<AddMovementModalProps> = (
             required
           />
 
-          <Styled.Select
-            value={category.title}
-            onChange={(e) => {
-              const selectedTitle = e.target.value;
-              const selectedCategory = props.categories.find(
-                (cat) => cat.title === selectedTitle
-              );
-              if (selectedCategory) {
-                setCategory(selectedCategory);
-              }
-            }}
-          >
-            <option value="">-- Choisir une catégorie --</option>
-            {props.categories.map((cat, index) => (
-              <option key={index} value={cat.title}>
-                {cat.title}
-              </option>
-            ))}
-          </Styled.Select>
+          <Suspense fallback="Loading categories...">
+            <SelectCategory
+              category={category}
+              setCategory={setCategory}
+              categoriesPromise={categories}
+            />
+          </Suspense>
 
           <Styled.Input
             type="date"

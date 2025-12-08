@@ -1,20 +1,21 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router"; // react-router v7 (ou react-router-dom v6)
 import * as Styled from "./Login.styles";
+import { useAuth } from "../../../context/auth";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Simulation de connexion réussie
-    console.log("Login avec:", email, password);
-
-    // On simule le stockage d'un token
-    localStorage.setItem("token", "fake-jwt-token");
+    await login({
+      identifier: email,
+      password,
+    });
 
     // Redirection vers le Dashboard (Accueil)
     navigate("/");
