@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as Styled from "./App.styles";
 
 import Summary from "../../molecules/Summary/Summary";
@@ -8,57 +8,22 @@ import { AddMovementModal } from "../../molecules/AddMovementModal/AddMovementMo
 import { AddCategoryModal } from "../../molecules/AddCategoryModal/AddCategoryModal";
 import type { Category } from "../../../types/Category";
 import { MonthYearPicker } from "../../molecules/MonthYearPicker/MonthYearPicker";
+import { useAuth } from "../../../context/auth";
+import { createTransaction, getTransactions } from "../../../api/transaction";
+import { getCategories } from "../../../api/category";
 
 export default function App() {
+  const { getAuthorizationNonNull } = useAuth();
+
   const [selectedMonth, setSelectedMonth] = useState(12);
   const [selectedYear, setSelectedYear] = useState(2025);
   const [activeTab, setActiveTab] = useState<"all" | "expense" | "income">(
-    "all",
+    "all"
   );
 
-  const [categories, setCategories] = useState<Category[]>([
-    { title: "Courses", color: "#FFD700", icon: "🛒" },
-    { title: "Loyer", color: "#FF4500", icon: "🏠" },
-    { title: "Salaire", color: "#32CD32", icon: "💰" },
-    { title: "Loisirs", color: "#87CEEB", icon: "🎉" },
-    { title: "Transport", color: "#808080", icon: "🚌" },
-    { title: "Santé", color: "#FF69B4", icon: "❤️" },
-    { title: "Cadeaux", color: "#ff8a80", icon: "🎁" },
-    { title: "Famille", color: "#ba68c8", icon: "👶" },
-  ]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
-  const [movements, setMovements] = useState<MovementProps[]>([
-    {
-      value: -98,
-      label: "Resto",
-      category: categories[1],
-      date: new Date("2025-12-03"),
-    },
-    {
-      value: -30,
-      label: "Ciné",
-      category: categories[3],
-      date: new Date("2025-12-05"),
-    },
-    {
-      value: -89,
-      label: "Navigo",
-      category: categories[4],
-      date: new Date("2025-12-01"),
-    },
-    {
-      value: -2500,
-      label: "Loyer",
-      category: categories[1],
-      date: new Date("2025-12-01"),
-    },
-    {
-      value: 2500,
-      label: "Salaire",
-      category: categories[2],
-      date: new Date("2025-12-28"),
-    },
-  ]);
+  const [movements, setMovements] = useState<MovementProps[]>([]);
 
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -85,15 +50,106 @@ export default function App() {
 
   const globalBalance = movements.reduce((acc, m) => acc + m.value, 0);
 
-  const addMovement = (mov: MovementProps) => {
-    setMovements((prev) => [mov, ...prev]);
-    setIsMovementModalOpen(false);
+  const addMovement = async (mov: MovementProps) => {
+    try {
+      if (!mov.category) throw new Error("Missing category");
+
+      const created = await createTransaction(
+        {
+          title: mov.label,
+          amount: mov.value,
+          date: mov.date.toISOString().split("T")[0],
+          category_id: mov.category?.id ?? 1,
+        },
+        getAuthorizationNonNull
+      );
+
+      const formatted: MovementProps = {
+        label: created.title,
+        value: created.amount,
+        date: new Date(created.date),
+        category: mov.category,
+      };
+
+      setMovements((prev) => [formatted, ...prev]);
+      setIsMovementModalOpen(false);
+    } catch (error) {
+      console.error("Error creating movement:", error);
+    }
   };
 
   const addCategory = (cat: Category) => {
     setCategories((prev) => [...prev, cat]);
     setIsCategoryModalOpen(false);
   };
+
+  // Fetch all transactions on initial load (WITHOUT category mapping).
+  // This runs before categories are available, so categories will be null here.
+  // The real mapping happens in the next useEffect once categories are loaded.
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const transactions = await getTransactions({}, getAuthorizationNonNull);
+
+        const mapped = transactions.map((t) => ({
+          label: t.title,
+          value: t.amount,
+          date: new Date(t.date),
+          category: categories.find((c) => c.id === t.category_id),
+        }));
+
+        setMovements(mapped);
+      } catch (error) {
+        console.error("Error while fetching the transactions:", error);
+      }
+    };
+
+    fetchTransactions();
+  }, [categories, getAuthorizationNonNull]);
+
+  // Fetch all categories from the backend on initial load.
+  // Once loaded, categories are stored globally in state and used for mapping.
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const result = await getCategories(getAuthorizationNonNull);
+
+        const formatted = result.map((c) => ({
+          id: c.id,
+          title: c.name,
+          color: c.color ?? "",
+          icon: c.icon ?? "",
+        }));
+
+        setCategories(formatted);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, [getAuthorizationNonNull]);
+
+  // Once categories are loaded, re-fetch transactions and map each transaction
+  // to its matching Category object (using category_id).
+  useEffect(() => {
+    if (categories.length === 0) return;
+
+    const fetchTransactions = async () => {
+      const transactions = await getTransactions({}, getAuthorizationNonNull);
+
+      const mapped = transactions.map((t) => ({
+        label: t.title,
+        value: t.amount,
+        date: new Date(t.date),
+        category: categories.find((c) => c.id === t.category_id),
+      }));
+
+      setMovements(mapped);
+    };
+
+    fetchTransactions();
+  }, [categories, getAuthorizationNonNull]);
 
   return (
     <Styled.PageWrapper>

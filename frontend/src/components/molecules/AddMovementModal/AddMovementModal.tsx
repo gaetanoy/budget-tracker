@@ -18,10 +18,11 @@ function SelectCategory({
   const categories = categoriesRaw.map(
     (category) =>
       ({
+        id: category.id,
         title: category.name,
         color: category.color ?? "",
         icon: category.icon ?? "",
-      }) satisfies Category,
+      } satisfies Category)
   );
 
   return (
@@ -30,7 +31,7 @@ function SelectCategory({
       onChange={(e) => {
         const selectedTitle = e.target.value;
         const selectedCategory = categories.find(
-          (cat) => cat.title === selectedTitle,
+          (cat) => cat.title === selectedTitle
         );
         if (selectedCategory) {
           setCategory(selectedCategory);
@@ -48,13 +49,13 @@ function SelectCategory({
 }
 
 export const AddMovementModal: React.FC<AddMovementModalProps> = (
-  props: AddMovementModalProps,
+  props: AddMovementModalProps
 ) => {
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState<Category>(DEFAULT_CATEGORY);
   const [date, setDate] = useState<string>(
-    new Date().toISOString().split("T")[0],
+    new Date().toISOString().split("T")[0]
   );
 
   const handleSubmit = (e: React.FormEvent) => {
