@@ -5,7 +5,8 @@ import { DEFAULT_CATEGORY, type Category } from "../../../types/Category";
 import { getCategories, type CategoryResponse } from "../../../api/category";
 import { useAuth } from "../../../context/auth";
 
-function SelectCategory({
+export function SelectCategory({
+  //TODO to move to Atoms
   category,
   setCategory,
   categoriesPromise,

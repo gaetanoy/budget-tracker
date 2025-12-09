@@ -9,12 +9,16 @@ import { AddCategoryModal } from "../../molecules/AddCategoryModal/AddCategoryMo
 import type { Category } from "../../../types/Category";
 import { MonthYearPicker } from "../../molecules/MonthYearPicker/MonthYearPicker";
 import { useAuth } from "../../../context/auth";
+
 import {
   createTransaction,
   getTransactions,
   removeTransaction,
+  modifyTransaction,
 } from "../../../api/transaction";
+
 import { getCategories } from "../../../api/category";
+import { EditMovementModal } from "../../molecules/EditMovementModal/EditMovementModal";
 
 export default function App() {
   const { getAuthorizationNonNull } = useAuth();
@@ -26,13 +30,15 @@ export default function App() {
   );
 
   const [categories, setCategories] = useState<Category[]>([]);
-
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
-  // --- FILTRES ---
+  const [editingMovement, setEditingMovement] = useState<Transaction | null>(
+    null
+  );
+
   const movementsByDate = transactions.filter((mov) => {
     const movDate = new Date(mov.date);
     return (
@@ -86,44 +92,54 @@ export default function App() {
   const deleteMovement = async (movement: Transaction) => {
     try {
       await removeTransaction(movement.id, getAuthorizationNonNull);
-      setTransactions((prev) => prev.filter((m) => m !== movement));
+      setTransactions((prev) => prev.filter((m) => m.id !== movement.id));
     } catch (e) {
       console.error("Error deleting movement:", e);
     }
   };
 
+  // --- UPDATE (NEW) ---
+  const updateMovement = async (updated: Transaction) => {
+    try {
+      const result = await modifyTransaction(
+        updated.id,
+        {
+          title: updated.label,
+          amount: updated.value,
+          date: updated.date.toISOString().split("T")[0],
+          category_id: updated.category?.id ?? 1,
+        },
+        getAuthorizationNonNull
+      );
+
+      // Local update
+      setTransactions((prev) =>
+        prev.map((t) =>
+          t.id === updated.id
+            ? {
+                ...t,
+                label: result.title,
+                value: result.amount,
+                date: new Date(result.date),
+                category: updated.category,
+              }
+            : t
+        )
+      );
+
+      setEditingMovement(null);
+    } catch (error) {
+      console.error("Error updating transaction:", error);
+    }
+  };
+
+  // Add category
   const addCategory = (cat: Category) => {
     setCategories((prev) => [...prev, cat]);
     setIsCategoryModalOpen(false);
   };
 
-  // Fetch all transactions on initial load (WITHOUT category mapping).
-  // This runs before categories are available, so categories will be null here.
-  // The real mapping happens in the next useEffect once categories are loaded.
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const transactions = await getTransactions({}, getAuthorizationNonNull);
-
-        const mapped = transactions.map((t) => ({
-          id: t.id,
-          label: t.title,
-          value: t.amount,
-          date: new Date(t.date),
-          category: categories.find((c) => c.id === t.category_id),
-        }));
-
-        setTransactions(mapped);
-      } catch (error) {
-        console.error("Error while fetching the transactions:", error);
-      }
-    };
-
-    fetchTransactions();
-  }, [categories, getAuthorizationNonNull]);
-
-  // Fetch all categories from the backend on initial load.
-  // Once loaded, categories are stored globally in state and used for mapping.
+  // --- FETCH CATEGORIES ON LOAD ---
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -145,8 +161,7 @@ export default function App() {
     fetchCategories();
   }, [getAuthorizationNonNull]);
 
-  // Once categories are loaded, re-fetch transactions and map each transaction
-  // to its matching Category object (using category_id).
+  // --- FETCH TRANSACTIONS (mapped to categories) ---
   useEffect(() => {
     if (categories.length === 0) return;
 
@@ -229,7 +244,11 @@ export default function App() {
         </h3>
 
         <Styled.HistoryScrollArea>
-          <Movements items={displayedMovements} onDelete={deleteMovement} />
+          <Movements
+            items={displayedMovements}
+            onDelete={deleteMovement}
+            onEdit={(m) => setEditingMovement(m)}
+          />
         </Styled.HistoryScrollArea>
       </Styled.RightSection>
 
@@ -244,6 +263,14 @@ export default function App() {
         <AddCategoryModal
           onClose={() => setIsCategoryModalOpen(false)}
           onAdd={addCategory}
+        />
+      )}
+
+      {editingMovement && (
+        <EditMovementModal
+          movement={editingMovement}
+          onSave={updateMovement}
+          onClose={() => setEditingMovement(null)}
         />
       )}
     </Styled.PageWrapper>
