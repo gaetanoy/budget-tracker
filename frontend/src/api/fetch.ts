@@ -8,13 +8,13 @@ export function getAuthHeaders(getAuth: () => string): HeadersInit {
 
 export default async function fetchApi<B, R>(
   path: string,
-  method: RequestInit["method"],
+  method: RequestInit["method"] = "GET",
   b?: B,
   contentType?: string,
-  additionalHeaders?: HeadersInit,
+  additionalHeaders?: HeadersInit
 ): Promise<R> {
   return fetch(HOST + path, {
-    method,
+    method: method.toUpperCase(),
     ...(b && {
       body:
         contentType === "application/json" ? JSON.stringify(b) : b.toString(),
