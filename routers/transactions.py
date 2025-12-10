@@ -76,7 +76,7 @@ def list_transactions(
         category_id: Optional[int] = Query(None, description="Filtrer par catégorie"),
         transaction_type: Optional[str] = Query(None, regex="^(positive|negative)$",
                                                 description="'positive' pour revenus, 'negative' pour dépenses"),
-        asc: Optional[bool] = Query(True, description="Trier par date croissante si true, décroissante si false")
+        asc: Optional[bool] = Query(False, description="Trier par date croissante si true, décroissante si false")
 ):
     """
     Récupère les transactions de l'utilisateur courant.

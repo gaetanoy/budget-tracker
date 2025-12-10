@@ -32,7 +32,7 @@ def get_transactions_by_user_filtered(
         end_date: Optional[date] = None,
         category_id: Optional[int] = None,
         transaction_type: Optional[str] = None,
-        asc: Optional[bool] = True
+        asc: Optional[bool] = False
 ):
     query = db.query(Transaction).filter(Transaction.user_id == user_id)
 
