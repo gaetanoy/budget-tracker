@@ -1,4 +1,4 @@
-import React, { Suspense, use, useState } from "react";
+import React, { Suspense, use, useMemo, useState } from "react";
 import * as Styled from "./AddMovementModal.styles";
 import type { AddMovementModalProps } from "./AddMovementModal.types";
 import { DEFAULT_CATEGORY, type Category } from "../../../types/Category";
@@ -6,8 +6,7 @@ import { getCategories, type CategoryResponse } from "../../../api/category";
 import { useAuth } from "../../../context/auth";
 import { autoCategorize } from "../../../api/category";
 
-export function SelectCategory({
-  //TODO to move to Atoms
+export const SelectCategory = React.memo(function SelectCategory({
   category,
   setCategory,
   categoriesPromise,
@@ -17,6 +16,7 @@ export function SelectCategory({
   categoriesPromise: Promise<CategoryResponse[]>;
 }) {
   const categoriesRaw = use(categoriesPromise);
+
   const categories = categoriesRaw.map(
     (category) =>
       ({
@@ -48,7 +48,7 @@ export function SelectCategory({
       ))}
     </Styled.Select>
   );
-}
+});
 
 export const AddMovementModal: React.FC<AddMovementModalProps> = (
   props: AddMovementModalProps
@@ -61,6 +61,13 @@ export const AddMovementModal: React.FC<AddMovementModalProps> = (
   );
   const [loadingGuess, setLoadingGuess] = useState(false);
 
+  const { getAuthorizationNonNull } = useAuth();
+
+  const categoriesPromise = useMemo(
+    () => getCategories(getAuthorizationNonNull),
+    [getAuthorizationNonNull]
+  );
+
   const handleAutoGuess = async () => {
     if (!label.trim()) return;
 
@@ -72,7 +79,7 @@ export const AddMovementModal: React.FC<AddMovementModalProps> = (
         getAuthorizationNonNull
       );
 
-      const categoriesResolved = await categories;
+      const categoriesResolved = await categoriesPromise;
 
       const matched = categoriesResolved.find(
         (c) => c.name.toLowerCase() === guess.category.toLowerCase()
@@ -106,10 +113,6 @@ export const AddMovementModal: React.FC<AddMovementModalProps> = (
     props.onClose();
   };
 
-  const { getAuthorizationNonNull } = useAuth();
-
-  const categories = getCategories(getAuthorizationNonNull);
-
   return (
     <Styled.Backdrop>
       <Styled.Modal>
@@ -139,7 +142,7 @@ export const AddMovementModal: React.FC<AddMovementModalProps> = (
               <SelectCategory
                 category={category}
                 setCategory={setCategory}
-                categoriesPromise={categories}
+                categoriesPromise={categoriesPromise}
               />
 
               {loadingGuess ? (
