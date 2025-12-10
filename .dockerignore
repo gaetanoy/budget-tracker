@@ -1,0 +1,23 @@
+# Ignorer le frontend complet
+frontend/
+
+# Ignorer les fichiers de configuration git et IDE
+.git
+.vscode
+.idea
+
+# Ignorer les fichiers temporaires Python et la base de données locale
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Ne pas copier le fichier .env (sécurité)
+.env
+
+# Ignorer la base de données locale lors du build (elle sera montée en volume)
+database/db.sqlite

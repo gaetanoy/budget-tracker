@@ -6,3 +6,4 @@ python-multipart
 passlib[bcrypt]
 torch 
 transformers
+psycopg2-binary
