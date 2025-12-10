@@ -27,13 +27,22 @@ pip install -r requirements.txt
 
 ### 3\. Configuration de l'Environnement
 
-Créez un fichier `.env` à la racine du projet et ajoutez votre token Hugging Face pour activer la fonctionnalité de catégorisation par IA:
+#### Backend
+
+Créez un fichier `.env` à la racine du projet et ajoutez votre token Hugging Face pour activer la fonctionnalité de catégorisation par IA :
 
 ```env
 HF_TOKEN=votre_token_huggingface_ici
 SECRET_KEY=votre_cle_secrete_tres_longue_et_aleatoire
 ALLOWED_HOSTS_FRONT=http://domain:port
-// Il n'est pas possible d'utiliser une variable d'environnement côté frontend pour les allowed origins.
+```
+
+#### Frontend
+
+Créer un fichier `.env` dans le dossier [frontend](./frontend/) et configurer votre ficher d'environnement de la manière suivante :
+
+```env
+VITE_FASTAPI_URL=http://domain:port
 ```
 
 ### 4\. Lancer l'Application

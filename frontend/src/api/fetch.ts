@@ -1,4 +1,4 @@
-const HOST = "http://localhost:8000"; // need to be hardocoded
+const HOST = import.meta.env.VITE_API_URL; // need to be hardocoded
 
 export function getAuthHeaders(getAuth: () => string): HeadersInit {
   return {
@@ -13,7 +13,7 @@ export default async function fetchApi<B, R>(
   method: RequestInit["method"] = "GET",
   b?: B,
   contentType?: string,
-  additionalHeaders?: HeadersInit,
+  additionalHeaders?: HeadersInit
 ): Promise<R> {
   return fetch(HOST + path, {
     method: method.toUpperCase(),
