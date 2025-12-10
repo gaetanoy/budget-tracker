@@ -31,14 +31,14 @@ async def lifespan(app: FastAPI):
         logger.error(f"Erreur lors de l'initialisation de la base de données: {e}")
         raise e
 
-        # Crée les catégories par défaut si elles n'existent pas
-        db = next(get_db())
-        try:
-            count = seed_default_categories(db)
-            if count > 0:
-                logger.info(f"{count} catégories par défaut créées.")
-        finally:
-            db.close()
+    # Crée les catégories par défaut si elles n'existent pas
+    db = next(get_db())
+    try:
+        count = seed_default_categories(db)
+        if count > 0:
+            logger.info(f"{count} catégories par défaut créées.")
+    finally:
+        db.close()
         
     logger.info("Authentification auprès de Hugging Face Hub...")
     try:

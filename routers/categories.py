@@ -121,7 +121,7 @@ def auto_categorize(
         raise HTTPException(status_code=500, detail="AI model not loaded")
 
     pipe = request.app.state.categorization_pipe
-    category_names = ["Essence", "Alimentation", "Logement", "Santé", "Transport", "Divertissement", "Voyages", "Éducation", "Cadeaux", "Dons", "Services publics", "Assurances", "Impôts", "Épargne", "Investissements", "Autres"]
+    category_names = get_categories_by_user(db, current_user.id)
 
     messages = [
         {
