@@ -88,6 +88,25 @@ Si vous avez une carte graphique NVIDIA ou bien un NPU Intel, vous pouvez améli
   pip install psutil intel-extension-for-pytorch==2.8.10+xpu --index-url https://pytorch-extension.intel.com/release-whl/stable/xpu/us/
   ```
 
+## Fonctionnalités du projet
+
+### Principales
+
+- Inscription et authentification
+- Visualiser des transactions dans une liste
+- Créer, modifier et supprimer des transactions
+- Créer, modifier et supprimer des catégories
+- Filtrer les transactions par date, catégorie et type (dépense/revenu)
+- Consulter graphiquement la synthèse des dépenses et revenus (graphique)
+
+### Secondaires
+
+- Catégorisation automatique des transactions via un modèle de NLP (IA)
+- Utilisation de JWT pour la sécurité (OAuth2 Password Bearer)
+- Documentation interactive avec Swagger UI
+- Trier les transactions par date
+- Grouper les transactions par catégories
+
 
 ## Documentation de l'API
 

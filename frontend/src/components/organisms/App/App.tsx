@@ -20,9 +20,11 @@ import {
 
 import { getCategories } from "../../../api/category";
 import { EditMovementModal } from "../../molecules/EditMovementModal/EditMovementModal";
+import { useNavigate } from "react-router";
 
 export default function App() {
   const { getAuthorizationNonNull } = useAuth();
+  const navigate = useNavigate();
 
   const [selectedMonth, setSelectedMonth] = useState(12);
   const [selectedYear, setSelectedYear] = useState(2025);
@@ -168,20 +170,24 @@ export default function App() {
     if (categories.length === 0) return;
 
     const fetchTransactions = async () => {
-      const transactions = await getTransactions(
-        filters,
-        getAuthorizationNonNull
-      );
+      try {
+        const transactions = await getTransactions(
+          filters,
+          getAuthorizationNonNull
+        );
 
-      const mapped = transactions.map((t) => ({
-        id: t.id,
-        label: t.title,
-        value: t.amount,
-        date: new Date(t.date),
-        category: categories.find((c) => c.id === t.category_id),
-      }));
+        const mapped = transactions.map((t) => ({
+          id: t.id,
+          label: t.title,
+          value: t.amount,
+          date: new Date(t.date),
+          category: categories.find((c) => c.id === t.category_id),
+        }));
 
-      setTransactions(mapped);
+        setTransactions(mapped);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
     };
 
     fetchTransactions();
