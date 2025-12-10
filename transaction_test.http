@@ -73,7 +73,7 @@ Content-Type: application/json
 {
   "amount": -50.50,
   "title": "Courses Leclerc",
-  "date": "2023-01-10",
+  "date": "2025-12-01",
   "category_id": 1
 }
 
@@ -85,7 +85,7 @@ Content-Type: application/json
 {
   "amount": -25.00,
   "title": "Burger King",
-  "date": "2023-01-15",
+  "date": "2025-12-07",
   "category_id": 1
 }
 
@@ -97,7 +97,7 @@ Content-Type: application/json
 {
   "amount": 2500.00,
   "title": "Salaire Janvier",
-  "date": "2023-01-30",
+  "date": "2025-12-03",
   "category_id": 2
 }
 
@@ -109,7 +109,7 @@ Content-Type: application/json
 {
   "amount": -80.00,
   "title": "Grand Frais",
-  "date": "2023-02-05",
+  "date": "2025-12-05",
   "category_id": 1
 }
 
@@ -121,7 +121,7 @@ Content-Type: application/json
 {
   "amount": 150.00,
   "title": "Vente Vinted",
-  "date": "2023-02-10",
+  "date": "2025-02-10",
   "category_id": 2
 }
 ###

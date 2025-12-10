@@ -1,4 +1,4 @@
-const HOST = "http://localhost:8000";
+const HOST = "http://localhost:8000"; // need to be hardocoded
 
 export function getAuthHeaders(getAuth: () => string): HeadersInit {
   return {

@@ -32,6 +32,8 @@ Créez un fichier `.env` à la racine du projet et ajoutez votre token Hugging F
 ```env
 HF_TOKEN=votre_token_huggingface_ici
 SECRET_KEY=votre_cle_secrete_tres_longue_et_aleatoire
+ALLOWED_HOSTS_FRONT=http://domain:port
+// Il n'est pas possible d'utiliser une variable d'environnement côté frontend pour les allowed origins.
 ```
 
 ### 4\. Lancer l'Application
