@@ -42,7 +42,7 @@ export function SelectCategory({
       <option value="">-- Choisir une catégorie --</option>
       {categories.map((cat, index) => (
         <option key={index} value={cat.title}>
-          {cat.title}
+          {cat.icon + " " + cat.title}
         </option>
       ))}
     </Styled.Select>
