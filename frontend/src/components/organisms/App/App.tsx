@@ -22,6 +22,12 @@ import { getCategories } from "../../../api/category";
 import { EditMovementModal } from "../../molecules/EditMovementModal/EditMovementModal";
 
 export default function App() {
+  const [error, setError] = useState<unknown>(null);
+
+  if (error !== null) {
+    throw error;
+  }
+
   const { getAuthorizationNonNull } = useAuth();
 
   const [selectedMonth, setSelectedMonth] = useState(12);
@@ -88,6 +94,7 @@ export default function App() {
       setIsMovementModalOpen(false);
     } catch (error) {
       console.error("Error creating movement:", error);
+      setError(error);
     }
   };
 
@@ -97,6 +104,7 @@ export default function App() {
       setTransactions((prev) => prev.filter((m) => m.id !== movement.id));
     } catch (e) {
       console.error("Error deleting movement:", e);
+      setError(e);
     }
   };
 
@@ -132,6 +140,7 @@ export default function App() {
       setEditingMovement(null);
     } catch (error) {
       console.error("Error updating transaction:", error);
+      setError(error);
     }
   };
 
@@ -157,6 +166,7 @@ export default function App() {
         setCategories(formatted);
       } catch (error) {
         console.error("Error fetching categories:", error);
+        setError(error);
       }
     };
 
@@ -185,6 +195,7 @@ export default function App() {
         setTransactions(mapped);
       } catch (error) {
         console.error("Error fetching transactions:", error);
+        setError(error);
       }
     };
 
