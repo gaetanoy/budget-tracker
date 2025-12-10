@@ -200,7 +200,13 @@ export default function App() {
     };
 
     fetchTransactions();
-  }, [categories, getAuthorizationNonNull, isMovementModalOpen, filters]);
+  }, [
+    categories,
+    getAuthorizationNonNull,
+    isMovementModalOpen,
+    filters,
+    isCategoryModalOpen,
+  ]);
 
   return (
     <Styled.PageWrapper>
