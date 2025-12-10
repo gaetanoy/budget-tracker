@@ -19,7 +19,6 @@ import {
 
 import { getCategories } from "../../../api/category";
 import { EditMovementModal } from "../../molecules/EditMovementModal/EditMovementModal";
-import { LoginError } from "../../../api/fetch";
 import { useNavigate } from "react-router";
 
 export default function App() {
@@ -132,11 +131,7 @@ export default function App() {
 
       setEditingMovement(null);
     } catch (error) {
-      if (error instanceof LoginError) {
-        navigate("/login");
-      } else {
-        console.error("Error updating transaction:", error);
-      }
+      console.error("Error updating transaction:", error);
     }
   };
 
@@ -161,11 +156,7 @@ export default function App() {
 
         setCategories(formatted);
       } catch (error) {
-        if (error instanceof LoginError) {
-          navigate("/login");
-        } else {
-          console.error("Error fetching categories:", error);
-        }
+        console.error("Error fetching categories:", error);
       }
     };
 
@@ -190,11 +181,7 @@ export default function App() {
 
         setTransactions(mapped);
       } catch (error) {
-        if (error instanceof LoginError) {
-          navigate("/login");
-        } else {
-          console.error("Error fetching transactions:", error);
-        }
+        console.error("Error fetching transactions:", error);
       }
     };
 
