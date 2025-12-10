@@ -20,11 +20,9 @@ import {
 
 import { getCategories } from "../../../api/category";
 import { EditMovementModal } from "../../molecules/EditMovementModal/EditMovementModal";
-import { useNavigate } from "react-router";
 
 export default function App() {
   const { getAuthorizationNonNull } = useAuth();
-  const navigate = useNavigate();
 
   const [selectedMonth, setSelectedMonth] = useState(12);
   const [selectedYear, setSelectedYear] = useState(2025);
