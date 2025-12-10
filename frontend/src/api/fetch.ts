@@ -6,12 +6,7 @@ export function getAuthHeaders(getAuth: () => string): HeadersInit {
   };
 }
 
-export class LoginError extends Error {
-  constructor(message = "Authentication required") {
-    super(message);
-    this.name = "LoginError";
-  }
-}
+export class LoginError extends Error {}
 
 export default async function fetchApi<B, R>(
   path: string,

@@ -15,21 +15,27 @@ import {
   getTransactions,
   removeTransaction,
   modifyTransaction,
+  type TransactionFilters,
 } from "../../../api/transaction";
 
 import { getCategories } from "../../../api/category";
 import { EditMovementModal } from "../../molecules/EditMovementModal/EditMovementModal";
-import { useNavigate } from "react-router";
 
 export default function App() {
+  const [error, setError] = useState<unknown>(null);
+
+  if (error !== null) {
+    throw error;
+  }
+
   const { getAuthorizationNonNull } = useAuth();
-  const navigate = useNavigate();
 
   const [selectedMonth, setSelectedMonth] = useState(12);
   const [selectedYear, setSelectedYear] = useState(2025);
   const [activeTab, setActiveTab] = useState<"all" | "expense" | "income">(
-    "all",
+    "all"
   );
+  const [filters, setFilters] = useState<TransactionFilters>({});
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -38,7 +44,7 @@ export default function App() {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   const [editingMovement, setEditingMovement] = useState<Transaction | null>(
-    null,
+    null
   );
 
   const movementsByDate = transactions.filter((mov) => {
@@ -73,7 +79,7 @@ export default function App() {
           date: mov.date.toISOString().split("T")[0],
           category_id: mov.category?.id ?? 1,
         },
-        getAuthorizationNonNull,
+        getAuthorizationNonNull
       );
 
       const formatted: Transaction = {
@@ -88,6 +94,7 @@ export default function App() {
       setIsMovementModalOpen(false);
     } catch (error) {
       console.error("Error creating movement:", error);
+      setError(error);
     }
   };
 
@@ -97,6 +104,7 @@ export default function App() {
       setTransactions((prev) => prev.filter((m) => m.id !== movement.id));
     } catch (e) {
       console.error("Error deleting movement:", e);
+      setError(e);
     }
   };
 
@@ -111,7 +119,7 @@ export default function App() {
           date: updated.date.toISOString().split("T")[0],
           category_id: updated.category?.id ?? 1,
         },
-        getAuthorizationNonNull,
+        getAuthorizationNonNull
       );
 
       // Local update
@@ -125,13 +133,14 @@ export default function App() {
                 date: new Date(result.date),
                 category: updated.category,
               }
-            : t,
-        ),
+            : t
+        )
       );
 
       setEditingMovement(null);
     } catch (error) {
       console.error("Error updating transaction:", error);
+      setError(error);
     }
   };
 
@@ -157,6 +166,7 @@ export default function App() {
         setCategories(formatted);
       } catch (error) {
         console.error("Error fetching categories:", error);
+        setError(error);
       }
     };
 
@@ -169,7 +179,10 @@ export default function App() {
 
     const fetchTransactions = async () => {
       try {
-        const transactions = await getTransactions({}, getAuthorizationNonNull);
+        const transactions = await getTransactions(
+          filters,
+          getAuthorizationNonNull
+        );
 
         const mapped = transactions.map((t) => ({
           id: t.id,
@@ -182,11 +195,18 @@ export default function App() {
         setTransactions(mapped);
       } catch (error) {
         console.error("Error fetching transactions:", error);
+        setError(error);
       }
     };
 
     fetchTransactions();
-  }, [categories, getAuthorizationNonNull, navigate]);
+  }, [
+    categories,
+    getAuthorizationNonNull,
+    isMovementModalOpen,
+    filters,
+    isCategoryModalOpen,
+  ]);
 
   return (
     <Styled.PageWrapper>
@@ -245,9 +265,28 @@ export default function App() {
           </Styled.ControlButton>
         </Styled.ActionsHeader>
 
-        <h3 style={{ marginTop: 0, marginBottom: 15 }}>
-          Historique ({displayedMovements.length})
-        </h3>
+        <Styled.FiltersContainer>
+          <h3 style={{ marginTop: 0, marginBottom: 15 }}>
+            Historique ({displayedMovements.length})
+          </h3>
+          {filters.asc ? (
+            <Styled.SortButton
+              onClick={() =>
+                setFilters((prev) => ({ ...prev, asc: !prev.asc }))
+              }
+            >
+              ▼
+            </Styled.SortButton>
+          ) : (
+            <Styled.SortButton
+              onClick={() =>
+                setFilters((prev) => ({ ...prev, asc: !prev.asc }))
+              }
+            >
+              ▲
+            </Styled.SortButton>
+          )}
+        </Styled.FiltersContainer>
 
         <Styled.HistoryScrollArea>
           <Movements

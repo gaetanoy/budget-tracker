@@ -28,8 +28,8 @@ export default function Login() {
 
         <Styled.Form onSubmit={handleSubmit}>
           <Styled.Input
-            type="email"
-            placeholder="Email (ex: test@test.com)"
+            type="text"
+            placeholder="Identifiant / Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
