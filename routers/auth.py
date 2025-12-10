@@ -20,7 +20,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 # Schéma pour dire à FastAPI où trouver le token (dans l'URL /auth/login)
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 class UserCreate(BaseModel):
@@ -28,9 +28,11 @@ class UserCreate(BaseModel):
     username: str
     password: str
 
+
 class UserLogin(BaseModel):
     identifier: str  # Peut être email ou username
     password: str
+
 
 class Token(BaseModel):
     access_token: str
@@ -43,13 +45,15 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    
+
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+def get_current_user(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -63,10 +67,10 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-        
+
     # 1. On essaie de trouver par email
     user = get_user_by_email(db, email=identifier)
-    
+
     # 2. Si non trouvé, on essaie par username
     if user is None:
         user = get_user_by_username(db, username=identifier)
@@ -76,18 +80,23 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     return user
 
 
-
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 def register(user: UserCreate, db: Session = Depends(get_db)):
     salt = uuid.uuid4().hex
     # Correction du hash avec concaténation
     hashed_pw = hashlib.sha512((user.password + salt).encode()).hexdigest()
-    
+
     if get_user_by_email(db, user.email):
         raise HTTPException(status_code=400, detail="Email already registered")
 
     try:
-        create_user(db, email=user.email, username=user.username, hashed_password=hashed_pw, salt=salt)
+        create_user(
+            db,
+            email=user.email,
+            username=user.username,
+            hashed_password=hashed_pw,
+            salt=salt,
+        )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -100,12 +109,14 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, user.identifier)
     if not db_user:
         db_user = get_user_by_username(db, user.identifier)
-        
+
     if not db_user:
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
     # Vérification du mot de passe
-    hashed_input_pw = hashlib.sha512((user.password + db_user.salt).encode()).hexdigest()
+    hashed_input_pw = hashlib.sha512(
+        (user.password + db_user.salt).encode()
+    ).hexdigest()
     if hashed_input_pw != db_user.hashed_password:
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
@@ -115,15 +126,19 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     access_token = create_access_token(
         data={"sub": db_user.email}, expires_delta=access_token_expires
     )
-    
+
     return {"access_token": access_token, "token_type": "bearer"}
 
 
 @router.get("/account")
-def get_profile(current_user = Depends(get_current_user)):
+def get_profile(current_user=Depends(get_current_user)):
     # Grâce à Depends(get_current_user), cet endpoint est maintenant protégé.
     # Si le token est invalide, l'utilisateur n'arrivera jamais ici.
-    return {"email": current_user.email, "username":current_user.username, "id": current_user.id}
+    return {
+        "email": current_user.email,
+        "username": current_user.username,
+        "id": current_user.id,
+    }
 
 
 @router.post("/logout")

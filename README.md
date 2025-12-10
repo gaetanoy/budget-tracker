@@ -44,6 +44,16 @@ fastapi dev main.py
 
 L'API sera accessible à l'adresse : `http://127.0.0.1:8000`.
 
+Dans un autre terminal, vous pouvez lancer le serveur web de test pour avoir l'interface frontend.
+Pour cela, vous devez aller dans le dossier frontend, et lancer la commande npm :
+```bash
+npm run dev
+```
+ou si vous avez yarn :
+```bash
+yarn dev
+```
+
 ## Documentation de l'API
 
 La documentation interactive (Swagger UI) est disponible à l'adresse suivante :
