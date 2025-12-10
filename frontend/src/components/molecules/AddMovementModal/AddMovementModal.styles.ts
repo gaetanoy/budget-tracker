@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import anas from "../../../../assets/anas.webp";
 
 const colors = {
   dark: "#2a2a2a",
@@ -144,12 +145,11 @@ export const MagicButton = styled.button`
 `;
 
 export const Loader = styled.div`
-  border: 3px solid ${colors.dark};
-  border-top: 3px solid transparent;
-  border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  animation: spin 0.6s linear infinite;
+  width: 32px;
+  height: 32px;
+  background: url(${anas}) center/cover no-repeat;
+  border-radius: 8px;
+  animation: spin 0.8s linear infinite;
 
   @keyframes spin {
     from {
