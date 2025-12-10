@@ -254,7 +254,7 @@ export default function App() {
                 setFilters((prev) => ({ ...prev, asc: !prev.asc }))
               }
             >
-              🔽
+              ▼
             </Styled.SortButton>
           ) : (
             <Styled.SortButton
@@ -262,7 +262,7 @@ export default function App() {
                 setFilters((prev) => ({ ...prev, asc: !prev.asc }))
               }
             >
-              🔼
+              ▲
             </Styled.SortButton>
           )}
         </Styled.FiltersContainer>
