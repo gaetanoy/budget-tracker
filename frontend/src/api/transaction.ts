@@ -33,6 +33,7 @@ export interface TransactionFilters {
   end_date?: string | null;
   category_id?: number | null;
   transaction_type?: TransactionType | null;
+  asc?: boolean;
 }
 
 export async function createTransaction(
@@ -59,6 +60,7 @@ export async function getTransactions(
     params.set("category_id", String(filters.category_id));
   if (filters.transaction_type)
     params.set("transaction_type", filters.transaction_type);
+  if (typeof filters.asc === "boolean") params.set("asc", String(filters.asc));
 
   const query = params.toString();
   const path = `/transactions/${query ? `?${query}` : ""}`;

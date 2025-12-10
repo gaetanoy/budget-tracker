@@ -62,6 +62,57 @@ export const ActionsHeader = styled.div`
   flex-shrink: 0;
 `;
 
+export const FiltersContainer = styled.div`
+  display: flex;
+  align-items: center;
+
+  margin-bottom: 15px;
+`;
+
+export const SortButton = styled.button<{ $active?: boolean }>`
+  background-color: #faf6ee;
+  color: #2a2a2a;
+  margin-inline-start: 25px;
+
+  border: 2px solid #2a2a2a;
+  border-radius: 14px;
+  box-shadow: 4px 4px 0px #2a2a2a;
+
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+
+  ${({ $active }) =>
+    $active &&
+    `
+    background-color: #efe8d8;
+    transform: translate(2px, 2px);
+    box-shadow: inset 2px 2px 4px rgba(0,0,0,0.25);
+  `}
+
+  &:hover {
+    ${({ $active }) =>
+      !$active &&
+      `
+      background-color: #fff;
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px #2a2a2a;
+    `}
+  }
+
+  &:active {
+    transform: translate(2px, 2px);
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.25);
+  }
+`;
+
 // Conteneur de l'historique avec Scrollbar
 export const HistoryScrollArea = styled.div`
   flex: 1; /* Prend tout l'espace restant */
