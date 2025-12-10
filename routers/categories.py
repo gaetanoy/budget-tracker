@@ -41,8 +41,10 @@ class CategoryResponse(BaseModel):
 class MessageResponse(BaseModel):
     message: str
 
+
 class CategoryGuessRequest(BaseModel):
     transaction_description: str
+
 
 class CategoryGuessResponse(BaseModel):
     category: str
@@ -115,13 +117,16 @@ def modify_category(
 
 @router.post("/auto-categorize", response_model=CategoryGuessResponse)
 def auto_categorize(
-    request: Request, category_guess: CategoryGuessRequest, db: Session = Depends(get_db), current_user=Depends(get_current_user)
+    request: Request,
+    category_guess: CategoryGuessRequest,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
 ):
     if not hasattr(request.app.state, "categorization_pipe"):
         raise HTTPException(status_code=500, detail="AI model not loaded")
 
     pipe = request.app.state.categorization_pipe
-    category_names = get_categories_by_user(db, current_user.id)
+    category_names = [cat.name for cat in get_categories_by_user(db, current_user.id)]
 
     messages = [
         {
@@ -162,6 +167,9 @@ def auto_categorize(
     predicted_category = outputs[0]["generated_text"][-1]["content"].strip()
 
     # verification que la catégorie prédite est dans la liste
-    matched_category = next((name for name in category_names if name.lower() == predicted_category.lower()), None)
+    matched_category = next(
+        (name for name in category_names if name.lower() == predicted_category.lower()),
+        None,
+    )
 
     return {"category": matched_category if matched_category else "Autres"}
