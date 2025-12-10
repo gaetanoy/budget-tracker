@@ -15,6 +15,7 @@ import {
   getTransactions,
   removeTransaction,
   modifyTransaction,
+  type TransactionFilters,
 } from "../../../api/transaction";
 
 import { getCategories } from "../../../api/category";
@@ -28,6 +29,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<"all" | "expense" | "income">(
     "all"
   );
+  const [filters, setFilters] = useState<TransactionFilters>({});
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -166,7 +168,10 @@ export default function App() {
     if (categories.length === 0) return;
 
     const fetchTransactions = async () => {
-      const transactions = await getTransactions({}, getAuthorizationNonNull);
+      const transactions = await getTransactions(
+        filters,
+        getAuthorizationNonNull
+      );
 
       const mapped = transactions.map((t) => ({
         id: t.id,
@@ -180,7 +185,7 @@ export default function App() {
     };
 
     fetchTransactions();
-  }, [categories, getAuthorizationNonNull]);
+  }, [categories, getAuthorizationNonNull, isMovementModalOpen, filters]);
 
   return (
     <Styled.PageWrapper>
@@ -239,9 +244,28 @@ export default function App() {
           </Styled.ControlButton>
         </Styled.ActionsHeader>
 
-        <h3 style={{ marginTop: 0, marginBottom: 15 }}>
-          Historique ({displayedMovements.length})
-        </h3>
+        <Styled.FiltersContainer>
+          <h3 style={{ marginTop: 0, marginBottom: 15 }}>
+            Historique ({displayedMovements.length})
+          </h3>
+          {filters.asc ? (
+            <Styled.SortButton
+              onClick={() =>
+                setFilters((prev) => ({ ...prev, asc: !prev.asc }))
+              }
+            >
+              🔽
+            </Styled.SortButton>
+          ) : (
+            <Styled.SortButton
+              onClick={() =>
+                setFilters((prev) => ({ ...prev, asc: !prev.asc }))
+              }
+            >
+              🔼
+            </Styled.SortButton>
+          )}
+        </Styled.FiltersContainer>
 
         <Styled.HistoryScrollArea>
           <Movements
