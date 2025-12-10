@@ -117,6 +117,9 @@ def modify_category(
 def auto_categorize(
     request: Request, category_guess: CategoryGuessRequest, db: Session = Depends(get_db), current_user=Depends(get_current_user)
 ):
+    if not hasattr(request.app.state, "categorization_pipe"):
+        raise HTTPException(status_code=500, detail="AI model not loaded")
+
     pipe = request.app.state.categorization_pipe
     category_names = ["Essence", "Alimentation", "Logement", "Santé", "Transport", "Divertissement", "Voyages", "Éducation", "Cadeaux", "Dons", "Services publics", "Assurances", "Impôts", "Épargne", "Investissements", "Autres"]
 
@@ -154,7 +157,7 @@ def auto_categorize(
     ]
 
     outputs = pipe(messages, max_new_tokens=20)
-    
+
     # Extraction et nettoyage de la réponse
     predicted_category = outputs[0]["generated_text"][-1]["content"].strip()
 

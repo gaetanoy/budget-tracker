@@ -1,4 +1,6 @@
+from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from database import engine
 from database.models import Base
 from database.default_categories import seed_default_categories
@@ -7,7 +9,9 @@ from database.database import get_db
 from contextlib import asynccontextmanager
 import logging
 
-from routers import auth, categories
+load_dotenv()
+from routers import auth, categories, transactions
+
 from huggingface_hub import login
 import os
 from transformers import pipeline
@@ -18,12 +22,15 @@ logger = logging.getLogger("uvicorn.error")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
+    logger.info("Chargement de la base de données...")
     try:
         # Récupère tous les modèles héritant de base et crée une table pour chacun d'eux
         Base.metadata.create_all(bind=engine)
         logger.info("Base de données initialisée avec succès.")
-        
+    except Exception as e:
+        logger.error(f"Erreur lors de l'initialisation de la base de données: {e}")
+        raise e
+
         # Crée les catégories par défaut si elles n'existent pas
         db = next(get_db())
         try:
@@ -33,22 +40,25 @@ async def lifespan(app: FastAPI):
         finally:
             db.close()
         
-        logger.info("Authentification auprès de Hugging Face Hub...")
+    logger.info("Authentification auprès de Hugging Face Hub...")
+    try:
         login(os.getenv("HF_TOKEN"))
-        
-        logger.info("Chargement du modèle d'IA...")
-        app.state.categorization_pipe = pipeline(
-            "text-generation",
-            model="google/gemma-3-4b-it",
-            device="cuda" if torch.cuda.is_available() else "cpu",
-            dtype=torch.bfloat16,
-        )
-        logger.info("Modèle d'IA chargé avec succès.")
-        
+        logger.info("Authentifié auprès de Hugging Face Hub avec succès")
 
+        logger.info("Chargement du modèle d'IA...")
+        try:
+            app.state.categorization_pipe = pipeline(
+                "text-generation",
+                model="google/gemma-3-4b-it",
+                device="cuda" if torch.cuda.is_available() else "cpu",
+                dtype=torch.bfloat16,
+            )
+            logger.info("Modèle d'IA chargé avec succès.")
+        except Exception as e:
+            logger.error(f"Erreur lors du chargement du modèle d'IA: {e}")
     except Exception as e:
-        logger.error(f"Erreur lors de l'initialisation de la base de données: {e}")
-        raise e
+        logger.error(f"Erreur d'authentification auprès de Hugging Face Hub: {e}")
+
     yield
     # Unload le modele d'IA si l'application stoppe
     if hasattr(app.state, "categorization_pipe"):
@@ -63,8 +73,17 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(auth.router)
 app.include_router(categories.router)
+app.include_router(transactions.router)
 
 
 

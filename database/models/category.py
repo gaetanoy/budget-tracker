@@ -12,3 +12,4 @@ class Category(Base):
     icon = Column(String, nullable=True)
     is_default = Column(Boolean, default=False, nullable=False)  # True = catégorie système
     user = relationship("User", back_populates="categories")
+    transactions = relationship("Transaction", back_populates="category")
