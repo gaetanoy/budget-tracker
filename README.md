@@ -75,7 +75,7 @@ Si vous avez une carte graphique NVIDIA ou bien un NPU Intel, vous pouvez améli
   ```
   2. Installer l'extension Intel pour PyTorch :
   ```bash
-  pip install intel-extension-for-pytorch==2.8.10+xpu --index-url https://pytorch-extension.intel.com/release-whl/stable/xpu/us/
+  pip install psutil intel-extension-for-pytorch==2.8.10+xpu --index-url https://pytorch-extension.intel.com/release-whl/stable/xpu/us/
   ```
 
 
