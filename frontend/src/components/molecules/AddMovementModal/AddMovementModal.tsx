@@ -1,12 +1,12 @@
-import React, { Suspense, use, useState } from "react";
+import React, { Suspense, use, useMemo, useState } from "react";
 import * as Styled from "./AddMovementModal.styles";
 import type { AddMovementModalProps } from "./AddMovementModal.types";
 import { DEFAULT_CATEGORY, type Category } from "../../../types/Category";
 import { getCategories, type CategoryResponse } from "../../../api/category";
 import { useAuth } from "../../../context/auth";
+import { autoCategorize } from "../../../api/category";
 
-export function SelectCategory({
-  //TODO to move to Atoms
+export const SelectCategory = React.memo(function SelectCategory({
   category,
   setCategory,
   categoriesPromise,
@@ -16,6 +16,7 @@ export function SelectCategory({
   categoriesPromise: Promise<CategoryResponse[]>;
 }) {
   const categoriesRaw = use(categoriesPromise);
+
   const categories = categoriesRaw.map(
     (category) =>
       ({
@@ -42,12 +43,12 @@ export function SelectCategory({
       <option value="">-- Choisir une catégorie --</option>
       {categories.map((cat, index) => (
         <option key={index} value={cat.title}>
-          {cat.title}
+          {cat.icon + " " + cat.title}
         </option>
       ))}
     </Styled.Select>
   );
-}
+});
 
 export const AddMovementModal: React.FC<AddMovementModalProps> = (
   props: AddMovementModalProps
@@ -58,6 +59,46 @@ export const AddMovementModal: React.FC<AddMovementModalProps> = (
   const [date, setDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
+  const [loadingGuess, setLoadingGuess] = useState(false);
+
+  const { getAuthorizationNonNull } = useAuth();
+
+  const categoriesPromise = useMemo(
+    () => getCategories(getAuthorizationNonNull),
+    [getAuthorizationNonNull]
+  );
+
+  const handleAutoGuess = async () => {
+    if (!label.trim()) return;
+
+    setLoadingGuess(true);
+
+    try {
+      const guess = await autoCategorize(
+        { transaction_description: label },
+        getAuthorizationNonNull
+      );
+
+      const categoriesResolved = await categoriesPromise;
+
+      const matched = categoriesResolved.find(
+        (c) => c.name.toLowerCase() === guess.category.toLowerCase()
+      );
+
+      if (matched) {
+        setCategory({
+          id: matched.id,
+          title: matched.name,
+          color: matched.color ?? "",
+          icon: matched.icon ?? "",
+        });
+      }
+    } catch (err) {
+      console.error("Auto-categorization failed:", err);
+    }
+
+    setLoadingGuess(false);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,10 +112,6 @@ export const AddMovementModal: React.FC<AddMovementModalProps> = (
     });
     props.onClose();
   };
-
-  const { getAuthorizationNonNull } = useAuth();
-
-  const categories = getCategories(getAuthorizationNonNull);
 
   return (
     <Styled.Backdrop>
@@ -101,11 +138,21 @@ export const AddMovementModal: React.FC<AddMovementModalProps> = (
           />
 
           <Suspense fallback="Loading categories...">
-            <SelectCategory
-              category={category}
-              setCategory={setCategory}
-              categoriesPromise={categories}
-            />
+            <Styled.CategoryRow>
+              <SelectCategory
+                category={category}
+                setCategory={setCategory}
+                categoriesPromise={categoriesPromise}
+              />
+
+              {loadingGuess ? (
+                <Styled.Loader />
+              ) : (
+                <Styled.MagicButton type="button" onClick={handleAutoGuess}>
+                  ✨
+                </Styled.MagicButton>
+              )}
+            </Styled.CategoryRow>
           </Suspense>
 
           <Styled.Input

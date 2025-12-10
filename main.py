@@ -3,6 +3,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine
 from database.models import Base
+from database.default_categories import seed_default_categories
+from database.database import get_db
+
 from contextlib import asynccontextmanager
 import logging
 
@@ -17,6 +20,27 @@ import torch
 logger = logging.getLogger("uvicorn.error")
 
 
+def get_best_device():
+    """Détecte le meilleur device disponible: CUDA > XPU (Intel) > CPU"""
+    if torch.cuda.is_available():
+        logger.info("CUDA détecté")
+        return "cuda"
+    
+    # Support Intel XPU (GPU/NPU Intel)
+    try:
+        import intel_extension_for_pytorch as ipex
+        if torch.xpu.is_available():
+            logger.info("Intel XPU/NPU détecté")
+            return "xpu"
+    except ImportError:
+        logger.info("intel-extension-for-pytorch non installé")
+    except AttributeError:
+        logger.info("XPU non disponible sur ce système")
+    
+    logger.info("Utilisation du CPU")
+    return "cpu"
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Chargement de la base de données...")
@@ -28,6 +52,15 @@ async def lifespan(app: FastAPI):
         logger.error(f"Erreur lors de l'initialisation de la base de données: {e}")
         raise e
 
+    # Crée les catégories par défaut si elles n'existent pas
+    db = next(get_db())
+    try:
+        count = seed_default_categories(db)
+        if count > 0:
+            logger.info(f"{count} catégories par défaut créées.")
+    finally:
+        db.close()
+        
     logger.info("Authentification auprès de Hugging Face Hub...")
     try:
         login(os.getenv("HF_TOKEN"))
@@ -38,7 +71,7 @@ async def lifespan(app: FastAPI):
             app.state.categorization_pipe = pipeline(
                 "text-generation",
                 model="google/gemma-3-4b-it",
-                device="cuda" if torch.cuda.is_available() else "cpu",
+                device=get_best_device(),
                 dtype=torch.bfloat16,
             )
             logger.info("Modèle d'IA chargé avec succès.")

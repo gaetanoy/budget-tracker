@@ -90,6 +90,12 @@ export const Input = styled.input`
   }
 `;
 
+export const CategoryRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
 export const Select = styled.select`
   padding: 14px 16px;
   border-radius: 12px;
@@ -105,11 +111,53 @@ export const Select = styled.select`
   background-repeat: no-repeat;
   background-position: right 1rem top 50%;
   background-size: 0.65rem auto;
+  width: 80%;
 
   &:focus {
     outline: none;
     border-color: ${colors.accentBlue};
     box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
+  }
+`;
+
+export const MagicButton = styled.button`
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 2px solid ${colors.dark};
+  background: ${colors.white};
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+  width: fit-content;
+
+  &:hover {
+    background: ${colors.accentBlue};
+    color: ${colors.white};
+    border-color: ${colors.accentBlue};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 86, 179, 0.3);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+`;
+
+export const Loader = styled.div`
+  border: 3px solid ${colors.dark};
+  border-top: 3px solid transparent;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  animation: spin 0.6s linear infinite;
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 `;
 
