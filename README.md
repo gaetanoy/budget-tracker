@@ -54,6 +54,31 @@ ou si vous avez yarn :
 yarn dev
 ```
 
+## 5. Améliorer la performance du modèle d'IA (optionnel)
+
+Si vous avez une carte graphique NVIDIA ou bien un NPU Intel, vous pouvez améliorer les performances du modèle de catégorisation en installant les extensions appropriées :
+
+- Pour NVIDIA (CUDA) :
+
+  1. Installer le CUDA Toolkit depuis le site officiel de NVIDIA.
+  2. Installer PyTorch avec le support CUDA (vérifier la version compatible avec votre CUDA Toolkit) :
+  3. Exemple avec Cuda 12.1 :
+  ```bash
+  pip install torch --index-url https://download.pytorch.org/whl/cu121
+  ```
+
+- Pour Intel (NPU) :
+
+  1. Installer PyTorch avec le support Intel XPU :
+  ```bash
+  pip install torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0 --index-url https://download.pytorch.org/whl/xpu
+  ```
+  2. Installer l'extension Intel pour PyTorch :
+  ```bash
+  pip install intel-extension-for-pytorch==2.8.10+xpu --index-url https://pytorch-extension.intel.com/release-whl/stable/xpu/us/
+  ```
+
+
 ## Documentation de l'API
 
 La documentation interactive (Swagger UI) est disponible à l'adresse suivante :
