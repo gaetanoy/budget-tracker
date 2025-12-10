@@ -132,7 +132,11 @@ export default function App() {
 
       setEditingMovement(null);
     } catch (error) {
-      console.error("Error updating transaction:", error);
+      if (error instanceof LoginError) {
+        navigate("/login");
+      } else {
+        console.error("Error updating transaction:", error);
+      }
     }
   };
 
