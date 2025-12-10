@@ -57,9 +57,6 @@ def get_transactions_by_user_filtered(
     else:
         query = query.order_by(Transaction.date.desc())
 
-    print("query.all() : ", [t.date for t in query.all()])
-    print("asc : ", asc)
-
     # 3. Exécution et retour
     return query.all()
 
