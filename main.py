@@ -70,7 +70,7 @@ async def lifespan(app: FastAPI):
         try:
             app.state.categorization_pipe = pipeline(
                 "text-generation",
-                model="google/gemma-3-4b-it",
+                model="google/gemma-3-1b-it",
                 device=get_best_device(),
                 dtype=torch.bfloat16,
             )
