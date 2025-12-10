@@ -32,7 +32,7 @@ def get_transactions_by_user_filtered(
         end_date: Optional[date] = None,
         category_id: Optional[int] = None,
         transaction_type: Optional[str] = None,
-        asc: Optional[bool] = None
+        asc: Optional[bool] = True
 ):
     query = db.query(Transaction).filter(Transaction.user_id == user_id)
 
@@ -50,12 +50,11 @@ def get_transactions_by_user_filtered(
             query = query.filter(Transaction.amount >= 0)
         elif transaction_type == "negative":
             query = query.filter(Transaction.amount < 0)
-    
-    if asc is not None:
-        if asc:
-            query = query.order_by(Transaction.date.asc())
-        else:
-            query = query.order_by(Transaction.date.desc())
+
+    if asc:
+        query = query.order_by(Transaction.date.asc())
+    else:
+        query = query.order_by(Transaction.date.desc())
 
     # 3. Exécution et retour
     return query.all()
