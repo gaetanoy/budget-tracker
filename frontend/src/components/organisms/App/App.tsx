@@ -19,14 +19,16 @@ import {
 
 import { getCategories } from "../../../api/category";
 import { EditMovementModal } from "../../molecules/EditMovementModal/EditMovementModal";
+import { useNavigate } from "react-router";
 
 export default function App() {
   const { getAuthorizationNonNull } = useAuth();
+  const navigate = useNavigate();
 
   const [selectedMonth, setSelectedMonth] = useState(12);
   const [selectedYear, setSelectedYear] = useState(2025);
   const [activeTab, setActiveTab] = useState<"all" | "expense" | "income">(
-    "all"
+    "all",
   );
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -36,7 +38,7 @@ export default function App() {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   const [editingMovement, setEditingMovement] = useState<Transaction | null>(
-    null
+    null,
   );
 
   const movementsByDate = transactions.filter((mov) => {
@@ -71,7 +73,7 @@ export default function App() {
           date: mov.date.toISOString().split("T")[0],
           category_id: mov.category?.id ?? 1,
         },
-        getAuthorizationNonNull
+        getAuthorizationNonNull,
       );
 
       const formatted: Transaction = {
@@ -109,7 +111,7 @@ export default function App() {
           date: updated.date.toISOString().split("T")[0],
           category_id: updated.category?.id ?? 1,
         },
-        getAuthorizationNonNull
+        getAuthorizationNonNull,
       );
 
       // Local update
@@ -123,8 +125,8 @@ export default function App() {
                 date: new Date(result.date),
                 category: updated.category,
               }
-            : t
-        )
+            : t,
+        ),
       );
 
       setEditingMovement(null);
@@ -166,21 +168,25 @@ export default function App() {
     if (categories.length === 0) return;
 
     const fetchTransactions = async () => {
-      const transactions = await getTransactions({}, getAuthorizationNonNull);
+      try {
+        const transactions = await getTransactions({}, getAuthorizationNonNull);
 
-      const mapped = transactions.map((t) => ({
-        id: t.id,
-        label: t.title,
-        value: t.amount,
-        date: new Date(t.date),
-        category: categories.find((c) => c.id === t.category_id),
-      }));
+        const mapped = transactions.map((t) => ({
+          id: t.id,
+          label: t.title,
+          value: t.amount,
+          date: new Date(t.date),
+          category: categories.find((c) => c.id === t.category_id),
+        }));
 
-      setTransactions(mapped);
+        setTransactions(mapped);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
     };
 
     fetchTransactions();
-  }, [categories, getAuthorizationNonNull]);
+  }, [categories, getAuthorizationNonNull, navigate]);
 
   return (
     <Styled.PageWrapper>

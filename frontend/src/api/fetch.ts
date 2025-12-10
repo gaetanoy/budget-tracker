@@ -6,12 +6,19 @@ export function getAuthHeaders(getAuth: () => string): HeadersInit {
   };
 }
 
+export class LoginError extends Error {
+  constructor(message = "Authentication required") {
+    super(message);
+    this.name = "LoginError";
+  }
+}
+
 export default async function fetchApi<B, R>(
   path: string,
   method: RequestInit["method"] = "GET",
   b?: B,
   contentType?: string,
-  additionalHeaders?: HeadersInit
+  additionalHeaders?: HeadersInit,
 ): Promise<R> {
   return fetch(HOST + path, {
     method: method.toUpperCase(),
@@ -26,6 +33,12 @@ export default async function fetchApi<B, R>(
       ...additionalHeaders,
     },
   })
+    .then((r) => {
+      if (r.status === 401) {
+        throw new LoginError();
+      }
+      return r;
+    })
     .then((r) => r.json())
     .then((r) => r as R);
 }
