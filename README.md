@@ -45,11 +45,21 @@ fastapi dev main.py
 L'API sera accessible à l'adresse : `http://127.0.0.1:8000`.
 
 Dans un autre terminal, vous pouvez lancer le serveur web de test pour avoir l'interface frontend.
-Pour cela, vous devez aller dans le dossier frontend, et lancer la commande npm :
+
+Pour cela, vous devez d'abord installer les dépendances du frontend, en allant dans le dossier frontend puis en exécutant cette commande :
+```bash
+npm install
+```
+ou avec yarn :
+```bash
+yarn
+```
+
+Ensuite, lancer la commande npm :
 ```bash
 npm run dev
 ```
-ou si vous avez yarn :
+ou avec yarn :
 ```bash
 yarn dev
 ```
