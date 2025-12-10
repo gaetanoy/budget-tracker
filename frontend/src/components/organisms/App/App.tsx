@@ -161,7 +161,7 @@ export default function App() {
     };
 
     fetchCategories();
-  }, [getAuthorizationNonNull, navigate]);
+  }, [getAuthorizationNonNull]);
 
   // --- FETCH TRANSACTIONS (mapped to categories) ---
   useEffect(() => {
