@@ -1,4 +1,4 @@
-const HOST = import.meta.env.VITE_API_URL; // need to be hardocoded
+const HOST = import.meta.env.VITE_API_URL;
 
 export function getAuthHeaders(getAuth: () => string): HeadersInit {
   return {
