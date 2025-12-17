@@ -10,35 +10,10 @@ from contextlib import asynccontextmanager
 import logging
 
 load_dotenv()
-from routers import auth, categories, transactions
+from routers import auth, categories, transactions  # noqa: E402
 
-from huggingface_hub import login
-import os
-from transformers import pipeline
-import torch
 
 logger = logging.getLogger("uvicorn.error")
-
-
-def get_best_device():
-    """Détecte le meilleur device disponible: CUDA > XPU (Intel) > CPU"""
-    if torch.cuda.is_available():
-        logger.info("CUDA détecté")
-        return "cuda"
-    
-    # Support Intel XPU (GPU/NPU Intel)
-    try:
-        import intel_extension_for_pytorch as ipex
-        if torch.xpu.is_available():
-            logger.info("Intel XPU/NPU détecté")
-            return "xpu"
-    except ImportError:
-        logger.info("intel-extension-for-pytorch non installé")
-    except AttributeError:
-        logger.info("XPU non disponible sur ce système")
-    
-    logger.info("Utilisation du CPU")
-    return "cpu"
 
 
 @asynccontextmanager
@@ -60,31 +35,7 @@ async def lifespan(app: FastAPI):
             logger.info(f"{count} catégories par défaut créées.")
     finally:
         db.close()
-        
-    logger.info("Authentification auprès de Hugging Face Hub...")
-    try:
-        login(os.getenv("HF_TOKEN"))
-        logger.info("Authentifié auprès de Hugging Face Hub avec succès")
-
-        logger.info("Chargement du modèle d'IA...")
-        try:
-            app.state.categorization_pipe = pipeline(
-                "text-generation",
-                model="google/gemma-3-1b-it",
-                device=get_best_device(),
-                dtype=torch.bfloat16,
-            )
-            logger.info("Modèle d'IA chargé avec succès.")
-        except Exception as e:
-            logger.error(f"Erreur lors du chargement du modèle d'IA: {e}")
-    except Exception as e:
-        logger.error(f"Erreur d'authentification auprès de Hugging Face Hub: {e}")
-
     yield
-    # Unload le modele d'IA si l'application stoppe
-    if hasattr(app.state, "categorization_pipe"):
-        del app.state.categorization_pipe
-        logger.info("Modèle d'IA déchargé.")
 
 
 app = FastAPI(
