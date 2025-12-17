@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: anas
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: anas-backend:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8000
+        env:
+        - name: HF_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: anas-secrets
+              key: HF_TOKEN
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: anas-secrets
+              key: SECRET_KEY
+        - name: DATABASE_USER
+          valueFrom:
+            secretKeyRef:
+              name: anas-secrets
+              key: DATABASE_USER
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: anas-secrets
+              key: DATABASE_PASSWORD
+        - name: DATABASE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: anas-secrets
+              key: DATABASE_NAME
+        - name: DATABASE_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: anas-config
+              key: DATABASE_PORT
+        - name: DATABASE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: anas-config
+              key: DATABASE_HOST
+        - name: DATABASE_URL
+          value: "postgresql://$(DATABASE_USER):$(DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME)"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
