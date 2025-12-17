@@ -1,7 +1,4 @@
-html,
-body,
-#root {
-  height: 100%;
+html {
   box-sizing: border-box;
 }
 
@@ -15,5 +12,11 @@ html,
 body {
   padding: 0;
   margin: 0;
+  height: 100%;
   font-family: "Inter", sans-serif;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
 }
