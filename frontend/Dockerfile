@@ -3,7 +3,7 @@ WORKDIR /app
 RUN corepack enable
 COPY package.json yarn.lock ./
 COPY . .
-RUN yarn install --frozen-lockfile
+RUN yarn install
 RUN yarn build
 
 FROM nginx:alpine
