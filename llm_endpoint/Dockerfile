@@ -40,14 +40,14 @@ RUN uv pip install --system --no-cache -r requirements.txt
 # Installation conditionnelle selon l'architecture
 RUN if [ "$ARCHITECTURE" = "intel" ]; then \
         echo "Installing Intel XPU dependencies..." && \
-        uv pip install --system --no-cache \
-            intel-extension-for-pytorch \
-            oneccl_bind_pt \
-            --extra-index-url https://pytorch-extension.intel.com/release-whl/stable/xpu/us/; \
+        uv pip install --system --no-cache torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0 --index-url https://download.pytorch.org/whl/xpu; \
+        uv pip install --system --no-cache pip install psutil intel-extension-for-pytorch==2.8.10+xpu --index-url https://pytorch-extension.intel.com/release-whl/stable/xpu/us/; \
     elif [ "$ARCHITECTURE" = "cuda" ]; then \
         echo "CUDA PyTorch already installed from base image"; \
+        uv pip install --system --no-cache transformers; \
     else \
         echo "Using CPU-only PyTorch"; \
+        uv pip install --system --no-cache torch transformers; \
     fi
 
 COPY entrypoint.py .

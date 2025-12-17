@@ -44,6 +44,46 @@ fastapi dev main.py
 
 L'API sera accessible à l'adresse : `http://127.0.0.1:8000`.
 
+## Lancement avec Docker
+
+L'application peut être lancée via Docker Compose. Le service LLM est séparé et peut être configuré pour différentes architectures matérielles.
+
+### Configuration
+
+Dans votre fichier `.env`, définissez l'architecture :
+
+```env
+# Options: cpu, intel, cuda
+ARCHITECTURE=cpu
+```
+
+### Lancer les services
+
+#### CPU / Intel (sans GPU NVIDIA) :
+```bash
+docker-compose up --build
+```
+
+#### CUDA (avec GPU NVIDIA) :
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.cuda.yml up --build
+```
+
+Le fichier `docker-compose.cuda.yml` ajoute la configuration nécessaire pour accéder au GPU NVIDIA dans le conteneur.
+
+### Services Docker
+
+| Service | Port | Description |
+|---------|------|-------------|
+| `backend` | 8000 | API principale FastAPI |
+| `llm` | 8001 | Service de catégorisation IA |
+| `db` | 5432 | Base de données PostgreSQL |
+| `frontend` | 5173 | Interface web |
+
+---
+
+## Lancement sans Docker
+
 Dans un autre terminal, vous pouvez lancer le serveur web de test pour avoir l'interface frontend.
 
 Pour cela, vous devez d'abord installer les dépendances du frontend, en allant dans le dossier frontend puis en exécutant cette commande :
