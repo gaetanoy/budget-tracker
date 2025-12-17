@@ -1,4 +1,3 @@
-# file: frontend/Dockerfile
 FROM node:20-alpine AS builder
 WORKDIR /app
 RUN corepack enable
