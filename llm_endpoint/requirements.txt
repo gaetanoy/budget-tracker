@@ -1,0 +1,6 @@
+httpx
+huggingface_hub
+torch 
+transformers
+fastapi[standard]
+uvicorn

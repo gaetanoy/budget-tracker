@@ -6,15 +6,30 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - llm
+    env_file:
+      - .env
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      # Creating url as: postgresql://user:password@SERVICE_NAME:PORT/DB_NAME
+      - DATABASE_URL=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@db:${DATABASE_PORT}/${DATABASE_NAME}
+      - LLM_SERVICE_URL=http://llm:8001
+
+  llm:
+    build:
+      context: ./llm_endpoint
+      dockerfile: Dockerfile
+    container_name: anas-llm
+    ports:
+      - "8001:8001"
     env_file:
       - .env
     environment:
       - HF_TOKEN=${HF_TOKEN}
-      - SECRET_KEY=${SECRET_KEY}
-      # Creating url as: postgresql://user:password@SERVICE_NAME:PORT/DB_NAME
-      - DATABASE_URL=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@db:${DATABASE_PORT}/${DATABASE_NAME}
+      - LLM_SERVICE_PORT=8001
     volumes:
       - hf_cache:/root/.cache/huggingface
+    restart: unless-stopped
 
   db:
     image: postgres:17
@@ -39,16 +54,8 @@ services:
       - "5173:80"
     environment:
       - NODE_ENV=production
+    restart: unless-stopped
 
 volumes:
   postgres_data:
-  hf_cache:services:
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "5173:80"
-    environment:
-      - NODE_ENV=production
-    restart: unless-stopped
+  hf_cache:
