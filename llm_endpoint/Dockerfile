@@ -2,6 +2,8 @@
 # Stage 1: Base images selon l'architecture
 # ============================================
 
+ARG ARCHITECTURE=cpu
+
 # Image de base pour CPU/Intel
 FROM ghcr.io/astral-sh/uv:python3.12-trixie AS base-cpu
 
@@ -16,10 +18,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # ============================================
 # Stage 2: Build final
 # ============================================
-ARG ARCHITECTURE=cpu
 FROM base-${ARCHITECTURE} AS final
 
-ARG ARCHITECTURE
 WORKDIR /app
 
 # Dépendances système
