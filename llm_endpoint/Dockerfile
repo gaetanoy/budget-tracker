@@ -1,8 +1,25 @@
-FROM ghcr.io/astral-sh/uv:python3.12-trixie
+# ============================================
+# Stage 1: Base images selon l'architecture
+# ============================================
 
-# ARG pour l'architecture: cpu, intel, cuda
+# Image de base pour CPU/Intel
+FROM ghcr.io/astral-sh/uv:python3.12-trixie AS base-cpu
+
+# Image de base pour CUDA
+FROM pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime AS base-cuda
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && curl -LsSf https://astral.sh/uv/install.sh | sh \
+    && ln -s /root/.local/bin/uv /usr/local/bin/uv \
+    && rm -rf /var/lib/apt/lists/*
+
+# ============================================
+# Stage 2: Build final
+# ============================================
 ARG ARCHITECTURE=cpu
+FROM base-${ARCHITECTURE} AS final
 
+ARG ARCHITECTURE
 WORKDIR /app
 
 # Dépendances système
@@ -25,10 +42,7 @@ RUN if [ "$ARCHITECTURE" = "intel" ]; then \
             oneccl_bind_pt \
             --extra-index-url https://pytorch-extension.intel.com/release-whl/stable/xpu/us/; \
     elif [ "$ARCHITECTURE" = "cuda" ]; then \
-        echo "Installing CUDA dependencies..." && \
-        uv pip install --system --no-cache \
-            torch \
-            --index-url https://download.pytorch.org/whl/cu121; \
+        echo "CUDA PyTorch already installed from base image"; \
     else \
         echo "Using CPU-only PyTorch"; \
     fi
