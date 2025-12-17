@@ -4,8 +4,11 @@
 
 ARG ARCHITECTURE=cpu
 
-# Image de base pour CPU/Intel
+# Image de base pour CPU
 FROM ghcr.io/astral-sh/uv:python3.12-trixie AS base-cpu
+
+# Image de base pour Intel (même image que CPU, extensions installées après)
+FROM ghcr.io/astral-sh/uv:python3.12-trixie AS base-intel
 
 # Image de base pour CUDA
 FROM pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime AS base-cuda
