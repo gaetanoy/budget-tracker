@@ -1,4 +1,48 @@
 services:
+  backend:
+    build: .
+    container_name: anas-api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+      - SECRET_KEY=${SECRET_KEY}
+      # Creating url as: postgresql://user:password@SERVICE_NAME:PORT/DB_NAME
+      - DATABASE_URL=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@db:${DATABASE_PORT}/${DATABASE_NAME}
+    volumes:
+      - hf_cache:/root/.cache/huggingface
+
+  db:
+    image: postgres:17
+    container_name: anas-db
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432" # to remote connect if needed
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    environment:
+      - NODE_ENV=production
+
+volumes:
+  postgres_data:
+  hf_cache:services:
   frontend:
     build:
       context: ./frontend
