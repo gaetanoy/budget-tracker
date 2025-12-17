@@ -1,4 +1,3 @@
-# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -23,24 +22,24 @@ wheels/
 .installed.cfg
 *.egg
 
-# Database
+
 *.sqlite
 *.db
 
-# IDE
+
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# Environment
+
 .env
 .env.local
 
-# Logs
+
 *.log
 
-# OS
+
 .DS_Store
 Thumbs.db

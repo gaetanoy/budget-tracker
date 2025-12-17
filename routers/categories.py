@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from database.database import get_db
@@ -11,6 +11,11 @@ from database.crud.category import (
 )
 from routers.auth import get_current_user
 from typing import List
+import httpx
+import os
+import logging
+
+logger = logging.getLogger("uvicorn.error")
 
 
 router = APIRouter(prefix="/categories", tags=["categories"])
@@ -116,60 +121,35 @@ def modify_category(
 
 
 @router.post("/auto-categorize", response_model=CategoryGuessResponse)
-def auto_categorize(
-    request: Request,
+async def auto_categorize(
     category_guess: CategoryGuessRequest,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    if not hasattr(request.app.state, "categorization_pipe"):
-        raise HTTPException(status_code=500, detail="AI model not loaded")
-
-    pipe = request.app.state.categorization_pipe
+    """Catégorise automatiquement une transaction via le service LLM externe"""
+    llm_service_url = os.getenv("LLM_SERVICE_URL", "http://localhost:8001")
     category_names = [cat.name for cat in get_categories_by_user(db, current_user.id)]
 
-    messages = [
-        {
-            "role": "system",
-            "content": [
-                {
-                    "type": "text",
-                    "text": "You are a strict financial categorization assistant. Your only job is to map a transaction description to one single category from the provided list.",
-                }
-            ],
-        },
-        {
-            "role": "user",
-            "content": [
-                {
-                    "type": "text",
-                    "text": f"""
-    Task: Categorize the following transaction.
-
-    Transaction Description: "{category_guess.transaction_description}"
-
-    Allowed Categories: {', '.join(category_names)}
-
-    Instructions:
-    - Return ONLY the exact name of the category from the list above.
-    - Do not add explanations.
-    - Do not add punctuation like periods.
-    - If the description is ambiguous, choose the closest match.
-    """,
-                }
-            ],
-        },
-    ]
-
-    outputs = pipe(messages, max_new_tokens=20)
-
-    # Extraction et nettoyage de la réponse
-    predicted_category = outputs[0]["generated_text"][-1]["content"].strip()
-
-    # verification que la catégorie prédite est dans la liste
-    matched_category = next(
-        (name for name in category_names if name.lower() == predicted_category.lower()),
-        None,
-    )
-
-    return {"category": matched_category if matched_category else "Autres"}
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.post(
+                f"{llm_service_url}/categorize",
+                json={
+                    "transaction_description": category_guess.transaction_description,
+                    "category_names": category_names,
+                },
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                return {"category": result.get("category", "Autres")}
+            else:
+                logger.warning(f"LLM service returned status {response.status_code}")
+                return {"category": "Autres"}
+                
+    except httpx.RequestError as e:
+        logger.warning(f"LLM service unavailable: {e}")
+        return {"category": "Autres"}
+    except Exception as e:
+        logger.error(f"Error calling LLM service: {e}")
+        return {"category": "Autres"}

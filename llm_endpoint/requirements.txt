@@ -1,0 +1,4 @@
+httpx
+huggingface_hub
+fastapi[standard]
+uvicorn

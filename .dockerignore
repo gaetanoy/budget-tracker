@@ -1,0 +1,22 @@
+# frontend is another docker image
+frontend/
+
+# configs
+.git
+.vscode
+.idea
+
+# cache, env
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+.env
+
+# database is another docker container
+database/db.sqlite
