@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine
+from database.default_banks import seed_default_banks
 from database.models import Base
 from database.default_categories import seed_default_categories
 from database.database import get_db
@@ -11,7 +12,7 @@ from contextlib import asynccontextmanager
 import logging
 
 load_dotenv()
-from routers import auth, categories, transactions  # noqa: E402
+from routers import auth, categories, transactions, bank, account  # noqa: E402
 
 
 logger = logging.getLogger("uvicorn.error")
@@ -31,9 +32,12 @@ async def lifespan(app: FastAPI):
     # Crée les catégories par défaut si elles n'existent pas
     db = next(get_db())
     try:
-        count = seed_default_categories(db)
-        if count > 0:
-            logger.info(f"{count} catégories par défaut créées.")
+        category_count = seed_default_categories(db)
+        if category_count > 0:
+            logger.info(f"{category_count} catégories par défaut créées.")
+        bank_count = seed_default_banks(db)
+        if bank_count > 0:
+            logger.info(f"{bank_count} banques par défaut créées.")
     finally:
         db.close()
     yield
@@ -57,6 +61,8 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(categories.router)
 app.include_router(transactions.router)
+app.include_router(bank.router)
+app.include_router(account.router)
 
 
 @app.get("/")

@@ -12,4 +12,4 @@ class User(Base):
     hashed_password = Column(String)
     salt = Column(String)
     categories = relationship("Category", back_populates="user")
-    transactions = relationship("Transaction", back_populates="user")
+    accounts = relationship("Account", back_populates="user")
