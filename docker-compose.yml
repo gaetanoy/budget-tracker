@@ -1,5 +1,4 @@
 services:
-  # Service 1 : Votre Backend API
   backend:
     build: .
     container_name: anas-api
@@ -10,15 +9,13 @@ services:
     env_file:
       - .env
     environment:
-      - HF_TOKEN=${HF_TOKEN}         # Lu depuis votre fichier .env ou votre terminal
-      - SECRET_KEY=${SECRET_KEY}     # Lu depuis votre fichier .env ou votre terminal
-      # L'URL de connexion : postgresql://user:password@SERVICE_NAME:PORT/DB_NAME
+      - HF_TOKEN=${HF_TOKEN}
+      - SECRET_KEY=${SECRET_KEY}
+      # Creating url as: postgresql://user:password@SERVICE_NAME:PORT/DB_NAME
       - DATABASE_URL=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@db:${DATABASE_PORT}/${DATABASE_NAME}
     volumes:
-      # On garde le cache Hugging Face pour ne pas retélécharger le modèle à chaque fois
       - hf_cache:/root/.cache/huggingface
 
-  # Service 2 : La base de données PostgreSQL
   db:
     image: postgres:17
     container_name: anas-db
@@ -30,10 +27,9 @@ services:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - POSTGRES_DB=${DATABASE_NAME}
     volumes:
-      # Persistance des données de la BDD
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432" # Optionnel : permet d'accéder à la BDD depuis votre PC (ex: DBeaver)
+      - "5432:5432" # to remote connect if needed
 
 volumes:
   postgres_data:

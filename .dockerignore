@@ -1,12 +1,12 @@
-# Ignorer le frontend complet
+# frontend is another docker image
 frontend/
 
-# Ignorer les fichiers de configuration git et IDE
+# configs
 .git
 .vscode
 .idea
 
-# Ignorer les fichiers temporaires Python et la base de données locale
+# cache, env
 __pycache__
 *.pyc
 *.pyo
@@ -16,8 +16,7 @@ env/
 venv/
 .venv/
 
-# Ne pas copier le fichier .env (sécurité)
 .env
 
-# Ignorer la base de données locale lors du build (elle sera montée en volume)
+# database is another docker container
 database/db.sqlite
