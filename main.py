@@ -5,6 +5,7 @@ from database import engine
 from database.models import Base
 from database.default_categories import seed_default_categories
 from database.database import get_db
+import os
 
 from contextlib import asynccontextmanager
 import logging
@@ -42,7 +43,7 @@ app = FastAPI(
     title="ANAS - Budget Tracker API",
     description="Assistant Numérique d'Administration des Sous",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -58,14 +59,13 @@ app.include_router(categories.router)
 app.include_router(transactions.router)
 
 
-
 @app.get("/")
 async def root():
     """Endpoint racine pour vérifier que l'API fonctionne"""
     return {
         "message": "ANAS API - Budget Tracker",
         "status": "running",
-        "docs": "/docs"
+        "docs": "/docs",
     }
 
 
