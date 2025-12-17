@@ -19,6 +19,8 @@ services:
     build:
       context: ./llm_endpoint
       dockerfile: Dockerfile
+      args:
+        - ARCHITECTURE=${ARCHITECTURE:-cpu}
     container_name: anas-llm
     ports:
       - "8001:8001"
