@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router";
+import { useNavigate } from "react-router";
 import * as Styled from "./Register.styles";
 import { register } from "../../../api/auth";
 
@@ -54,7 +54,8 @@ export default function Register() {
         </Styled.Form>
 
         <Styled.FooterText>
-          Déjà un compte ? <Link to="/login">Se connecter</Link>
+          Déjà un compte ?{" "}
+          <Styled.StyledLink to="/login">Se connecter</Styled.StyledLink>
         </Styled.FooterText>
       </Styled.Card>
     </Styled.Container>

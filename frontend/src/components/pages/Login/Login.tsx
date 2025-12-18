@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router"; // react-router v7 (ou react-router-dom v6)
+import { useNavigate } from "react-router"; // react-router v7 (ou react-router-dom v6)
 import * as Styled from "./Login.styles";
 import { useAuth } from "../../../context/auth";
 
@@ -25,7 +25,6 @@ export default function Login() {
     <Styled.Container>
       <Styled.Card>
         <Styled.Title>Connexion</Styled.Title>
-
         <Styled.Form onSubmit={handleSubmit}>
           <Styled.Input
             type="text"
@@ -41,12 +40,11 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-
           <Styled.Button type="submit">Se connecter</Styled.Button>
         </Styled.Form>
-
         <Styled.FooterText>
-          Pas encore de compte ? <Link to="/register">S'inscrire</Link>
+          Pas encore de compte ?{" "}
+          <Styled.StyledLink to="/register">S'inscrire</Styled.StyledLink>
         </Styled.FooterText>
       </Styled.Card>
     </Styled.Container>
