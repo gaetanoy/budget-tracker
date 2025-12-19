@@ -8,15 +8,6 @@ const colors = {
   blue: "#007bff",
 };
 
-export const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  background-color: ${colors.white};
-`;
-
 export const Card = styled.div`
   background: ${colors.beigeBg};
   border: 3px solid ${colors.dark};

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router"; // react-router v7 (ou react-router-dom v6)
 import * as Styled from "./Login.styles";
 import { useAuth } from "../../../context/auth";
+import { Container } from "../../atoms/Container/Container";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export default function Login() {
   };
 
   return (
-    <Styled.Container>
+    <Container>
       <Styled.Card>
         <Styled.Title>Connexion</Styled.Title>
         <Styled.Form onSubmit={handleSubmit}>
@@ -47,6 +48,6 @@ export default function Login() {
           <Styled.StyledLink to="/register">S'inscrire</Styled.StyledLink>
         </Styled.FooterText>
       </Styled.Card>
-    </Styled.Container>
+    </Container>
   );
 }
