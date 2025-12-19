@@ -1,7 +1,7 @@
 from typing import Optional
 
 from sqlalchemy.orm import Session
-from database.models import Transaction
+from database.models import Transaction, Account
 from datetime import date
 
 
@@ -11,20 +11,19 @@ def create_transaction(
     title: str,
     date: date,
     category_id: int,
-    user_id: int,
+    account_id: int,
 ) -> Transaction:
     new_transaction = Transaction(
         amount=amount,
         title=title,
         date=date,
         category_id=category_id,
-        user_id=user_id,
+        account_id=account_id,
     )
     db.add(new_transaction)
     db.commit()
     db.refresh(new_transaction)
     return new_transaction
-
 
 def get_transactions_by_user_filtered(
     db: Session,
@@ -33,9 +32,10 @@ def get_transactions_by_user_filtered(
     end_date: Optional[date] = None,
     category_id: Optional[int] = None,
     transaction_type: Optional[str] = None,
+    account_id: Optional[int] = None,
     asc: Optional[bool] = False,
 ):
-    query = db.query(Transaction).filter(Transaction.user_id == user_id)
+    query = db.query(Transaction).filter(Transaction.account_id == (Account.user_id == user_id))
 
     if start_date:
         query = query.filter(Transaction.date >= start_date)
@@ -51,6 +51,9 @@ def get_transactions_by_user_filtered(
             query = query.filter(Transaction.amount >= 0)
         elif transaction_type == "negative":
             query = query.filter(Transaction.amount < 0)
+
+    if account_id:
+        query = query.filter(Transaction.account_id == account_id)
 
     if asc:
         query = query.order_by(Transaction.date.asc())

@@ -9,7 +9,7 @@ from database.crud.transaction import create_transaction, get_transaction_by_id,
 from database.database import get_db
 from pydantic import BaseModel
 
-from database.models import Category
+from database.models import Category, Account
 from routers.auth import get_current_user
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
@@ -20,6 +20,7 @@ class TransactionCreate(BaseModel):
     title: str
     date: datetime.date
     category_id: int
+    account_id: int
 
 
 class TransactionUpdate(BaseModel):
@@ -34,6 +35,7 @@ class TransactionResponse(BaseModel):
     title: str
     date: datetime.date
     category_id: int
+    account_id: int
 
     class Config:
         from_attributes = True  # Permet de convertir un objet SQLAlchemy en Pydantic
@@ -51,15 +53,17 @@ def add_transaction(transaction: TransactionCreate,
 
     category = db.query(Category).filter(Category.id == transaction.category_id).first()
 
-    if not category:
+    if not category: #or category.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Category not found")
 
-#    if category.user_id != current_user.id:
-#        raise HTTPException(status_code=403, detail="You do not have access to this category")
+    account  = db.query(Account).filter(Account.id == transaction.account_id).first()
+
+    if not account: # or account.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Account not found")
 
     try:
         new_transaction = create_transaction(
-            db, transaction.amount, transaction.title, transaction.date, transaction.category_id, current_user.id
+            db, transaction.amount, transaction.title, transaction.date, transaction.category_id, transaction.account_id
         )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
@@ -105,7 +109,8 @@ def remove_transaction(
     current_user=Depends(get_current_user),
 ):
     transaction = get_transaction_by_id(db, transaction_id)
-    if transaction is None or transaction.user_id != current_user.id:
+    accounts = db.query(Account).filter(Account.user_id == current_user.id).all()
+    if transaction is None or transaction.account_id not in [account.id for account in accounts]:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Transaction not found"
         )
@@ -123,7 +128,8 @@ def modify_transaction(
     current_user=Depends(get_current_user),
 ):
     transaction = get_transaction_by_id(db, transaction_id)
-    if transaction is None or transaction.user_id != current_user.id:
+    accounts = db.query(Account).filter(Account.user_id == current_user.id).all()
+    if transaction is None or transaction.account_id not in [account.id for account in accounts]:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Transaction not found"
         )

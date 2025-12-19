@@ -19,7 +19,6 @@ Content-Type: application/json
 }
 
 ### 1.2 Connexion & Récupération du Token
-# capture et stocke le token dans la variable globale {{authToken}} pour les requêtes suivantes.
 POST {{host}}/auth/login
 Content-Type: application/json
 
@@ -32,13 +31,29 @@ Content-Type: application/json
 %}
 ###
 
+# ---------------------------------------------------------
+# 2. CRÉATION DE COMPTE BANCAIRE
+# ---------------------------------------------------------
+
+### 2.1 Créer un compte bancaire
+POST {{host}}/accounts/create
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Compte Courant",
+  "bank_id": 1
+}
+> {%
+    client.global.set("accountId", response.body.id);
+%}
+###
 
 # ---------------------------------------------------------
-# 2. CRÉATION DE CATÉGORIES
+# 3. CRÉATION DE CATÉGORIES
 # ---------------------------------------------------------
 
-
-### 2.1 Créer une catégorie "Alimentation"
+### 3.1 Créer une catégorie "Alimentation"
 POST {{host}}/categories/create
 Authorization: Bearer {{authToken}}
 Content-Type: application/json
@@ -49,7 +64,7 @@ Content-Type: application/json
   "icon": "images/food_icon"
 }
 
-### 2.2 Créer une catégorie "Salaire"
+### 3.2 Créer une catégorie "Salaire"
 POST {{host}}/categories/create
 Authorization: Bearer {{authToken}}
 Content-Type: application/json
@@ -62,10 +77,10 @@ Content-Type: application/json
 ###
 
 # ---------------------------------------------------------
-# 3. CRÉATION DE TRANSACTIONS
+# 4. CRÉATION DE TRANSACTIONS
 # ---------------------------------------------------------
 
-### 3.1 Transaction 1
+### 4.1 Transaction 1
 POST {{host}}/transactions/create
 Authorization: Bearer {{authToken}}
 Content-Type: application/json
@@ -74,10 +89,11 @@ Content-Type: application/json
   "amount": -50.50,
   "title": "Courses Leclerc",
   "date": "2025-12-01",
-  "category_id": 1
+  "category_id": 1,
+  "account_id": {{accountId}}
 }
 
-### 3.2 Transaction 2
+### 4.2 Transaction 2
 POST {{host}}/transactions/create
 Authorization: Bearer {{authToken}}
 Content-Type: application/json
@@ -86,10 +102,11 @@ Content-Type: application/json
   "amount": -25.00,
   "title": "Burger King",
   "date": "2025-12-07",
-  "category_id": 1
+  "category_id": 1,
+  "account_id": {{accountId}}
 }
 
-### 3.3 Transaction 3
+### 4.3 Transaction 3
 POST {{host}}/transactions/create
 Authorization: Bearer {{authToken}}
 Content-Type: application/json
@@ -98,10 +115,11 @@ Content-Type: application/json
   "amount": 2500.00,
   "title": "Salaire Janvier",
   "date": "2025-12-03",
-  "category_id": 2
+  "category_id": 2,
+  "account_id": {{accountId}}
 }
 
-### 3.4 Transaction 4
+### 4.4 Transaction 4
 POST {{host}}/transactions/create
 Authorization: Bearer {{authToken}}
 Content-Type: application/json
@@ -110,10 +128,11 @@ Content-Type: application/json
   "amount": -80.00,
   "title": "Grand Frais",
   "date": "2025-12-05",
-  "category_id": 1
+  "category_id": 1,
+  "account_id": {{accountId}}
 }
 
-### 3.5 Transaction 5
+### 4.5 Transaction 5
 POST {{host}}/transactions/create
 Authorization: Bearer {{authToken}}
 Content-Type: application/json
@@ -122,39 +141,40 @@ Content-Type: application/json
   "amount": 150.00,
   "title": "Vente Vinted",
   "date": "2025-02-10",
-  "category_id": 2
+  "category_id": 2,
+  "account_id": {{accountId}}
 }
 ###
 
 # ---------------------------------------------------------
-# 4. TESTS DES FILTRES
+# 5. TESTS DES FILTRES
 # ---------------------------------------------------------
 
-### 4.1 Récupérer TOUTES les transactions
+### 5.1 Récupérer TOUTES les transactions
 GET {{host}}/transactions/
 Authorization: Bearer {{authToken}}
 
-### 4.2 Filtrer par DATE (Mois de Janvier uniquement)
+### 5.2 Filtrer par DATE (Mois de Janvier uniquement)
 GET {{host}}/transactions/?start_date=2023-01-01&end_date=2023-01-31
 Authorization: Bearer {{authToken}}
 
-### 4.3 Filtrer par CATÉGORIE (Seulement Alimentation - ID 1)
+### 5.3 Filtrer par CATÉGORIE (Seulement Alimentation - ID 1)
 GET {{host}}/transactions/?category_id=1
 Authorization: Bearer {{authToken}}
 
-### 4.4 Filtrer par TYPE (Seulement les revenus "positive")
+### 5.4 Filtrer par TYPE (Seulement les revenus "positive")
 GET {{host}}/transactions/?transaction_type=positive
 Authorization: Bearer {{authToken}}
 
-### 4.5 Filtre COMBINÉ (Dépenses de Janvier)
+### 5.5 Filtre COMBINÉ (Dépenses de Janvier)
 GET {{host}}/transactions/?start_date=2023-01-01&end_date=2023-01-31&transaction_type=negative
 Authorization: Bearer {{authToken}}
 
 # ---------------------------------------------------------
-# 5. MODIFICATION & SUPPRESSION
+# 6. MODIFICATION & SUPPRESSION
 # ---------------------------------------------------------
 
-### 5.1 Modifier la transaction #1
+### 6.1 Modifier la transaction #1
 PATCH {{host}}/transactions/1
 Authorization: Bearer {{authToken}}
 Content-Type: application/json
@@ -164,14 +184,14 @@ Content-Type: application/json
   "title": "Courses Leclerc"
 }
 
-### 5.2 Vérifier la modification
+### 6.2 Vérifier la modification
 GET {{host}}/transactions/
 Authorization: Bearer {{authToken}}
 
-### 5.3 Supprimer la transaction #2
+### 6.3 Supprimer la transaction #2
 DELETE {{host}}/transactions/2
 Authorization: Bearer {{authToken}}
 
-### 5.4 Vérifier la suppression
+### 6.4 Vérifier la suppression
 GET {{host}}/transactions/
 Authorization: Bearer {{authToken}}
