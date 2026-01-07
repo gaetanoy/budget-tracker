@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router";
-import App from "./components/organisms/App/App";
+import Dashboard from "./components/pages/Dashboard/Dashboard.tsx";
 import Account from "./components/pages/Account/Account.tsx";
 import Login from "./components/pages/Login/Login";
 import Register from "./components/pages/Register/Register";
@@ -25,11 +25,11 @@ createRoot(document.getElementById("root")!).render(
               </ErrorBoundary>
             }
           >
-            <Route index element={<App />} />
+            <Route index element={<Dashboard />} />
             <Route path="account" element={<Account />} />
           </Route>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
-  </StrictMode>,
+  </StrictMode>
 );
