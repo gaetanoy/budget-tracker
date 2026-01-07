@@ -249,6 +249,11 @@ kubectl create secret docker-registry regcred --docker-server=https://index.dock
 kubectl apply -R -f k8s/
 ```
 
+4. En l'absence de règles DNS pour accéder au frontend, vous pouvez créer un tunnel avec le port forwarding :
+```bash
+kubectl port-forward svc/frontend-service 5173:80 -n u-grp8
+```
+
 ## Auteurs
 
 * [Gaëtan OUEYEYA](https://github.com/goueyeya)
