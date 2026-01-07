@@ -1,3 +1,7 @@
+import type { Transaction } from "../../../types/Transaction";
+
 export type SummaryProps = {
-  amount?: number;
+  data: Transaction[];
+  globalBalance: number;
+  activeTab: "all" | "expense" | "income";
 };

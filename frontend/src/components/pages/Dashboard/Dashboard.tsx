@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import * as Styled from "./App.styles";
+import * as Styled from "./Dashboard.styles";
 
 import Summary from "../../molecules/Summary/Summary";
 import { Movements } from "../../molecules/Movements/Movements";
@@ -21,7 +21,7 @@ import {
 import { getCategories } from "../../../api/category";
 import { EditMovementModal } from "../../molecules/EditMovementModal/EditMovementModal";
 
-export default function App() {
+export default function Dashboard() {
   const [error, setError] = useState<unknown>(null);
 
   if (error !== null) {

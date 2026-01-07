@@ -20,6 +20,9 @@ importers:
       react-icons:
         specifier: ^5.5.0
         version: 5.5.0(react@19.2.0)
+      react-is:
+        specifier: ^19.2.1
+        version: 19.2.1
       react-router:
         specifier: ^7.9.6
         version: 7.10.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)

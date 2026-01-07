@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import styled from "styled-components";
 
 const colors = {
@@ -7,23 +8,13 @@ const colors = {
   blue: "#007bff",
 };
 
-export const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  width: 100%;
-  padding: 20px;
-  background-color: #fff; 
-`;
-
 export const Card = styled.div`
   background: ${colors.beigeBg};
   border: 3px solid ${colors.dark};
   border-radius: 16px;
   box-shadow: 8px 8px 0px ${colors.dark};
   padding: 40px;
+  margin: 10px;
   width: 100%;
   max-width: 400px;
   display: flex;
@@ -50,10 +41,8 @@ export const Input = styled.input`
   padding: 14px;
   border-radius: 8px;
   border: 2px solid ${colors.dark};
-  font-size: 1rem;
-  outline: none;
+  font-size: 16px;
   transition: border-color 0.2s;
-
   &:focus {
     border-color: ${colors.blue};
   }
@@ -65,7 +54,7 @@ export const Button = styled.button`
   color: ${colors.white};
   border: none;
   border-radius: 8px;
-  font-size: 1.1rem;
+  font-size: 20px;
   font-weight: 700;
   cursor: pointer;
   margin-top: 10px;
@@ -74,6 +63,7 @@ export const Button = styled.button`
   &:hover {
     transform: translateY(-2px);
   }
+
   &:active {
     transform: translateY(1px);
   }
@@ -81,15 +71,15 @@ export const Button = styled.button`
 
 export const FooterText = styled.p`
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 14px;
   margin-top: 10px;
-  
-  a {
-    color: ${colors.blue};
-    font-weight: 700;
-    text-decoration: none;
-    &:hover {
-      text-decoration: underline;
-    }
+`;
+
+export const StyledLink = styled(Link)`
+  color: ${colors.blue};
+  font-weight: 700;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
   }
 `;
