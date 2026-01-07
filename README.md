@@ -215,7 +215,7 @@ docker build -t anas-llm-endpoint:latest ./llm_endpoint
 
 3. Créer le namespace anas :
 ```bash
-kubectl apply -f k8s/namespace.yaml
+kubectl create namespace anas
 ```
 
 4. Créer les différents composants en appliquant récursivement le dossier k8s :
@@ -242,7 +242,10 @@ Nous avons placé les images Docker sur un registre docker hub privé, donc il f
 kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v1/ --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email> -n anas
 ```
 
-
+2. Appliquer les fichiers k8s comme indiqué précédemment (pas besoin du namespace car il existe à distance) :
+```bash
+kubectl apply -R -f k8s/
+```
 
 ## Auteurs
 
