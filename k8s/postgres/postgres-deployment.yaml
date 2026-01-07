@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
-  namespace: anas
+  namespace: u-grp8
 spec:
   replicas: 1
   selector:
@@ -19,6 +19,8 @@ spec:
         ports:
         - containerPort: 5432
         env:
+        - name: PGDATA
+          value: "/var/lib/postgresql/data/pgdata"
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
