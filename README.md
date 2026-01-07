@@ -210,8 +210,6 @@ docker build -t anas-frontend:latest ./frontend
 docker build -t anas-llm-endpoint:latest ./llm_endpoint
 ```
 
-
-
 2. Créer le namespace anas :
 ```bash
 kubectl apply -f k8s/namespace.yaml    
@@ -222,7 +220,15 @@ kubectl apply -f k8s/namespace.yaml
 kubectl apply -R -f k8s/
 ```
 
+4. Vérifier que tous les pods sont en état `Running` :
+```bash
+kubectl get pods -n anas
+```
 
+5. Eventuellement exposer le service frontend via un port local :
+```bash
+kubectl port-forward svc/frontend-service 5173:80 -n anas
+```
 
 
 ## Auteurs
