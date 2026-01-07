@@ -6,41 +6,16 @@ import {
   ResponsiveContainer,
   Label,
 } from "recharts";
-import styled from "styled-components";
-import type { Transaction } from "../../atoms/Movement/Movement.types";
-import { CategoryBubbles } from "../CategoryBubbles/CategoryBubbles"; // <--- Import des bulles
+import * as Styled from "./Summary.styles";
+import { Card } from "../../atoms/Card/Card";
+import { CategoryBubbles } from "../CategoryBubbles/CategoryBubbles";
+import type { SummaryProps } from "./Summary.types";
 
-// --- STYLES ---
-const Card = styled.div`
-  background-color: #f7f3e8;
-  border: 3px solid #2a2a2a;
-  border-radius: 16px;
-  box-shadow: 6px 6px 0px #2a2a2a;
-  padding: 20px;
-  width: 100%;
-  height: auto; /* Changement ici : hauteur automatique pour contenir les bulles */
-  min-height: 380px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  margin-bottom: 40px;
-`;
-
-const ChartContainer = styled.div`
-  width: 100%;
-  height: 300px; /* On fixe la hauteur du graph car le parent est en auto */
-  margin-bottom: 20px;
-`;
-
-// --- TYPES ---
-type Props = {
-  data: Transaction[];
-  globalBalance: number;
-  activeTab: "all" | "expense" | "income";
-};
-
-export default function Summary({ data, globalBalance, activeTab }: Props) {
+export default function Summary({
+  data,
+  globalBalance,
+  activeTab,
+}: SummaryProps) {
   // 1. Calculer le montant central
   let centerAmount = 0;
   let centerLabel = "";
@@ -51,7 +26,7 @@ export default function Summary({ data, globalBalance, activeTab }: Props) {
     centerLabel = "Solde Actuel";
     centerColor = centerAmount >= 0 ? "#2a2a2a" : "#ff6b6b";
   } else {
-    centerAmount = data.reduce((acc, m) => acc + m.value, 0);
+    centerAmount = data.reduce((acc, m) => acc + m.amount, 0);
     centerLabel = activeTab === "income" ? "Revenus" : "Dépenses";
     centerColor = activeTab === "income" ? "#2ecc71" : "#ff6b6b";
   }
@@ -60,7 +35,7 @@ export default function Summary({ data, globalBalance, activeTab }: Props) {
   const aggregatedData = data.reduce((acc, curr) => {
     const categoryName = curr.category?.title || "Autres";
     const color = curr.category?.color || "#ccc";
-    const amount = Math.abs(curr.value);
+    const amount = Math.abs(curr.amount);
 
     const existing = acc.find((item) => item.name === categoryName);
     if (existing) {
@@ -78,7 +53,7 @@ export default function Summary({ data, globalBalance, activeTab }: Props) {
 
   return (
     <Card>
-      <ChartContainer>
+      <Styled.ChartContainer>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -92,9 +67,14 @@ export default function Summary({ data, globalBalance, activeTab }: Props) {
               cornerRadius={isGraphEmpty ? 0 : 8}
               stroke="none"
             >
-              {graphData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
+              {graphData.map(
+                (
+                  entry: { name: string; value: number; color: string },
+                  index: number
+                ) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                )
+              )}
 
               <Label
                 value={`${centerAmount.toFixed(2)} €`}
@@ -124,7 +104,7 @@ export default function Summary({ data, globalBalance, activeTab }: Props) {
             )}
           </PieChart>
         </ResponsiveContainer>
-      </ChartContainer>
+      </Styled.ChartContainer>
 
       {/* AJOUT DES BULLES ICI */}
       <CategoryBubbles movements={data} type={activeTab} />
