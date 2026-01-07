@@ -13,10 +13,12 @@ spec:
       labels:
         app: backend
     spec:
+      imagePullSecrets:
+      - name: regcred
       containers:
       - name: backend
-        image: anas-backend:latest
-        imagePullPolicy: Never
+        image: gabelloide/anas-app:backend-latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
         env:

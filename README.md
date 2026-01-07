@@ -233,6 +233,16 @@ kubectl get pods -n anas
 kubectl port-forward svc/frontend-service 5173:80 -n anas
 ```
 
+### Avec k8s :
+
+Nous avons placé les images Docker sur un registre docker hub privé, donc il faut créer un secret docker pour que k8s puisse y accéder.
+
+1. Créer le secret docker (mettre le token d'accès et les informations de votre compte Docker Hub) :
+```bash
+kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v1/ --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email> -n anas
+```
+
+
 
 ## Auteurs
 

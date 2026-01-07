@@ -13,10 +13,12 @@ spec:
       labels:
         app: llm-endpoint
     spec:
+      imagePullSecrets:
+      - name: regcred
       containers:
       - name: llm-endpoint
-        image: anas-llm-endpoint:latest
-        imagePullPolicy: Never
+        image: gabelloide/anas-app:llm-latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8001
         env:
