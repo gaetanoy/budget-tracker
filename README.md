@@ -239,10 +239,12 @@ Nous avons placé les images Docker sur un registre docker hub privé, donc il f
 
 1. Créer le secret docker (mettre le token d'accès et les informations de votre compte Docker Hub) :
 ```bash
-kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v1/ --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email> -n anas
+kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v1/ --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email> -n <namespace>
 ```
 
-2. Appliquer les fichiers k8s comme indiqué précédemment (pas besoin du namespace car il existe à distance) :
+2. Assurez vous que les fichiers de déploiement fassent référence au namespace correct (modifier `u-grp8` par votre namespace s'il est différent).
+
+3. Appliquer les fichiers k8s comme indiqué précédemment (pas besoin du namespace car il existe à distance) :
 ```bash
 kubectl apply -R -f k8s/
 ```
