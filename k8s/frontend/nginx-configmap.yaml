@@ -11,9 +11,14 @@ data:
       root /usr/share/nginx/html;
       index index.html;
 
-      # Proxy vers le backend (toutes les routes API)
-      location ~ ^/(auth|categories|transactions) {
-        proxy_pass http://backend-service:8000;
+      # Frontend (SPA)
+      location / {
+        try_files $uri $uri/ /index.html;
+      }
+
+      # Proxy vers le backend
+      location /api/ {
+        proxy_pass http://backend-service:8000/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -28,10 +33,5 @@ data:
       location /assets/ {
         expires 1y;
         add_header Cache-Control "public, max-age=31536000, immutable";
-      }
-
-      # Frontend (SPA) - DOIT ÊTRE EN DERNIER
-      location / {
-        try_files $uri $uri/ /index.html;
       }
     }

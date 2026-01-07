@@ -7,3 +7,4 @@ data:
   DATABASE_PORT: "5432"
   DATABASE_HOST: "postgres-service"
   LLM_SERVICE_URL: "http://llm-endpoint-service:8001"
+  ALLOWED_HOSTS_FRONT: "http://frontend-service"

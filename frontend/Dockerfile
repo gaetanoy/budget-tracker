@@ -4,6 +4,9 @@ RUN corepack enable
 COPY package.json yarn.lock ./
 COPY . .
 RUN yarn install
+
+ENV VITE_FASTAPI_URL=/api
+
 RUN yarn build
 
 FROM nginx:alpine

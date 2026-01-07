@@ -55,6 +55,11 @@ spec:
             configMapKeyRef:
               name: anas-config
               key: DATABASE_HOST
+        - name: ALLOWED_HOSTS_FRONT
+          valueFrom:
+            configMapKeyRef:
+              name: anas-config
+              key: ALLOWED_HOSTS_FRONT
         - name: DATABASE_URL
           value: "postgresql://$(DATABASE_USER):$(DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME)"
         resources:
