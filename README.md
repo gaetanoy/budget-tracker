@@ -186,6 +186,45 @@ La documentation interactive (Swagger UI) est disponible à l'adresse suivante :
 
 Un fichier `transaction_test.http` est fourni pour tester les endpoints via un client HTTP. Il contient les scénarios d'inscription, d'authentification et de manipulation des transactions.
 
+
+## Installation avec Kubernetes
+
+Le projet peut être déployé sur un cluster Kubernetes en utilisant les fichiers de configuration situés dans le dossier `k8s/`.
+Les étapes principales sont les suivantes :
+
+1. Constuire les images Docker vers un registre accessible par le cluster.
+Par exemple, avec Minikube et Docker:
+
+- Bash
+```bash
+eval $(minikube docker-env)
+docker build -t anas-backend:latest .
+docker build -t anas-frontend:latest ./frontend
+docker build -t anas-llm-endpoint:latest ./llm_endpoint
+```
+- Powershell
+```powershell
+minikube docker-env | Invoke-Expression
+docker build -t anas-backend:latest .
+docker build -t anas-frontend:latest ./frontend
+docker build -t anas-llm-endpoint:latest ./llm_endpoint
+```
+
+
+
+2. Créer le namespace anas :
+```bash
+kubectl apply -f k8s/namespace.yaml    
+```
+
+3. Créer les différents composants en appliquant récursivement le dossier k8s :
+```bash
+kubectl apply -R -f k8s/
+```
+
+
+
+
 ## Auteurs
 
 * [Gaëtan OUEYEYA](https://github.com/goueyeya)
