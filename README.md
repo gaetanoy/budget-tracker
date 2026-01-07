@@ -212,7 +212,7 @@ docker build -t anas-llm-endpoint:latest ./llm_endpoint
 
 2. Créer le namespace anas :
 ```bash
-kubectl apply -f k8s/namespace.yaml    
+kubectl apply -f k8s/namespace.yaml
 ```
 
 3. Créer les différents composants en appliquant récursivement le dossier k8s :
