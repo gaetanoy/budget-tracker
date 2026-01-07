@@ -11,14 +11,10 @@ data:
       root /usr/share/nginx/html;
       index index.html;
 
-      # Frontend (SPA)
-      location / {
-        try_files $uri $uri/ /index.html;
-      }
-
-      # Proxy vers le backend
-      location /api/ {
-        proxy_pass http://backend-service:8000/;
+      # 1. Proxy pour les routes de l'API (Auth, Categories, Transactions, Docs)
+      # On utilise une expression régulière pour capturer tous les endpoints du backend
+      location ~ ^/(auth|categories|transactions|docs|openapi.json) {
+        proxy_pass http://backend-service:8000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -29,7 +25,12 @@ data:
         proxy_set_header X-Forwarded-Proto $scheme;
       }
 
-      # Cache des assets
+      # 2. Frontend (SPA) - Tout ce qui n'est pas une API est géré par React
+      location / {
+        try_files $uri $uri/ /index.html;
+      }
+
+      # 3. Cache des assets
       location /assets/ {
         expires 1y;
         add_header Cache-Control "public, max-age=31536000, immutable";

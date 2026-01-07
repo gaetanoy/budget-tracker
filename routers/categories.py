@@ -73,7 +73,7 @@ def add_category(
     return new_category
 
 
-@router.get("/", response_model=List[CategoryResponse])
+@router.get("", response_model=List[CategoryResponse])
 def list_categories(
     db: Session = Depends(get_db), current_user=Depends(get_current_user)
 ):
