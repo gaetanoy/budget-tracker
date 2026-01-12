@@ -1,7 +1,8 @@
 import { createContext, use } from "react";
-import type { UserLogin } from "../api/auth";
+import type { ProfileResponse, UserLogin } from "../api/auth";
 
 export interface UseAuth {
+  user: ProfileResponse | null;
   getAuthorization(): string | null;
   getAuthorizationNonNull(): string;
 
