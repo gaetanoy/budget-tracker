@@ -5,6 +5,7 @@ export interface TransactionCreate {
   title: string;
   date: string; // YYYY-MM-DD
   category_id: number;
+  account_id: number;
 }
 
 export interface TransactionUpdate {
@@ -20,6 +21,7 @@ export interface TransactionResponse {
   title: string;
   date: string;
   category_id: number;
+  account_id: number;
 }
 
 export interface MessageResponse {
@@ -33,6 +35,7 @@ export interface TransactionFilters {
   end_date?: string | null;
   category_id?: number | null;
   transaction_type?: TransactionType | null;
+  account_id?: number | null;
   asc?: boolean;
 }
 
@@ -60,6 +63,8 @@ export async function getTransactions(
     params.set("category_id", String(filters.category_id));
   if (filters.transaction_type)
     params.set("transaction_type", filters.transaction_type);
+  if (typeof filters.account_id === "number")
+    params.set("account_id", String(filters.account_id));
   if (typeof filters.asc === "boolean") params.set("asc", String(filters.asc));
 
   const query = params.toString();
