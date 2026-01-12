@@ -3,10 +3,10 @@ import * as Styled from "./Dashboard.styles";
 
 import Summary from "../../molecules/Summary/Summary";
 import { Movements } from "../../molecules/Movements/Movements";
-import type { Transaction } from "../../atoms/Movement/Movement.types";
+import type { Transaction } from "../../../types/Transaction";
 import { AddMovementModal } from "../../molecules/AddMovementModal/AddMovementModal";
 import { AddCategoryModal } from "../../molecules/AddCategoryModal/AddCategoryModal";
-import type { Category } from "../../../types/Category";
+import { DEFAULT_CATEGORY, type Category } from "../../../types/Category";
 import { MonthYearPicker } from "../../molecules/MonthYearPicker/MonthYearPicker";
 import { useAuth } from "../../../context/auth";
 
@@ -20,6 +20,7 @@ import {
 
 import { getCategories } from "../../../api/category";
 import { EditMovementModal } from "../../molecules/EditMovementModal/EditMovementModal";
+import { createDefaultAccount } from "../../../types/Account";
 
 export default function Dashboard() {
   const [error, setError] = useState<unknown>(null);
@@ -28,7 +29,7 @@ export default function Dashboard() {
     throw error;
   }
 
-  const { getAuthorizationNonNull } = useAuth();
+  const { getAuthorizationNonNull, user } = useAuth();
 
   const [selectedMonth, setSelectedMonth] = useState(12);
   const [selectedYear, setSelectedYear] = useState(2025);
@@ -56,17 +57,17 @@ export default function Dashboard() {
   });
 
   const displayedMovements = movementsByDate.filter((mov) => {
-    if (activeTab === "expense") return mov.value < 0;
-    if (activeTab === "income") return mov.value > 0;
+    if (activeTab === "expense") return mov.amount < 0;
+    if (activeTab === "income") return mov.amount > 0;
     return true;
   });
 
   const chartData = movementsByDate.filter((mov) => {
-    if (activeTab === "income") return mov.value > 0;
-    return mov.value < 0;
+    if (activeTab === "income") return mov.amount > 0;
+    return mov.amount < 0;
   });
 
-  const globalBalance = transactions.reduce((acc, m) => acc + m.value, 0);
+  const globalBalance = transactions.reduce((acc, m) => acc + m.amount, 0);
 
   const addMovement = async (mov: Omit<Transaction, "id">) => {
     try {
@@ -75,9 +76,10 @@ export default function Dashboard() {
       const created = await createTransaction(
         {
           title: mov.label,
-          amount: mov.value,
-          date: mov.date.toISOString().split("T")[0],
+          amount: mov.amount,
+          date: mov.date,
           category_id: mov.category?.id ?? 1,
+          account_id: mov.account.id ?? 0,
         },
         getAuthorizationNonNull
       );
@@ -85,9 +87,10 @@ export default function Dashboard() {
       const formatted: Transaction = {
         id: created.id,
         label: created.title,
-        value: created.amount,
-        date: new Date(created.date),
+        amount: created.amount,
+        date: created.date,
         category: mov.category,
+        account: mov.account,
       };
 
       setTransactions((prev) => [formatted, ...prev]);
@@ -115,8 +118,8 @@ export default function Dashboard() {
         updated.id,
         {
           title: updated.label,
-          amount: updated.value,
-          date: updated.date.toISOString().split("T")[0],
+          amount: updated.amount,
+          date: updated.date,
           category_id: updated.category?.id ?? 1,
         },
         getAuthorizationNonNull
@@ -129,9 +132,10 @@ export default function Dashboard() {
             ? {
                 ...t,
                 label: result.title,
-                value: result.amount,
-                date: new Date(result.date),
+                amount: result.amount,
+                date: result.date,
                 category: updated.category,
+                account: updated.account,
               }
             : t
         )
@@ -184,12 +188,18 @@ export default function Dashboard() {
           getAuthorizationNonNull
         );
 
+        if (!user) {
+          throw new Error("User is not authenticated");
+        }
+
         const mapped = transactions.map((t) => ({
           id: t.id,
           label: t.title,
-          value: t.amount,
-          date: new Date(t.date),
-          category: categories.find((c) => c.id === t.category_id),
+          amount: t.amount,
+          date: t.date,
+          category:
+            categories.find((c) => c.id === t.category_id) ?? DEFAULT_CATEGORY,
+          account: createDefaultAccount(user.id),
         }));
 
         setTransactions(mapped);
