@@ -216,6 +216,7 @@ export default function Dashboard() {
     isMovementModalOpen,
     filters,
     isCategoryModalOpen,
+    user,
   ]);
 
   return (
