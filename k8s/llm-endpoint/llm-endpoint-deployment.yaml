@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-endpoint
+  namespace: u-grp8
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llm-endpoint
+  template:
+    metadata:
+      labels:
+        app: llm-endpoint
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: llm-endpoint
+        image: gabelloide/anas-app:llm-latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8001
+        env:
+        - name: HF_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: anas-secrets
+              key: HF_TOKEN
+        - name: LLM_SERVICE_PORT
+          value: "8001"
+        - name: HF_HOME
+          value: "/data/hf_cache"
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "500m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+      volumes:
+      - name: model-cache
+        persistentVolumeClaim:
+          claimName: llm-cache-pvc

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: llm-endpoint-service
+  namespace: u-grp8
+spec:
+  selector:
+    app: llm-endpoint
+  ports:
+  - port: 8001
+    targetPort: 8001
+  type: ClusterIP

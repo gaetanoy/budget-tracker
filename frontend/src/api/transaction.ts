@@ -63,7 +63,7 @@ export async function getTransactions(
   if (typeof filters.asc === "boolean") params.set("asc", String(filters.asc));
 
   const query = params.toString();
-  const path = `/transactions/${query ? `?${query}` : ""}`;
+  const path = `/transactions${query ? `?${query}` : ""}`;
 
   return await fetchApi(
     path,

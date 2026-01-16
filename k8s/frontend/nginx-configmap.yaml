@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: u-grp8
+data:
+  default.conf: |
+    server {
+      listen 80;
+      server_name _;
+      root /usr/share/nginx/html;
+      index index.html;
+
+      # 1. Proxy pour les routes de l'API (Auth, Categories, Transactions, Docs)
+      # On utilise une expression régulière pour capturer tous les endpoints du backend
+      location ~ ^/(auth|categories|transactions|docs|openapi.json) {
+        proxy_pass http://backend-service:8000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+      }
+
+      # 2. Frontend (SPA) - Tout ce qui n'est pas une API est géré par React
+      location / {
+        try_files $uri $uri/ /index.html;
+      }
+
+      # 3. Cache des assets
+      location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+      }
+    }

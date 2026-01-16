@@ -186,6 +186,74 @@ La documentation interactive (Swagger UI) est disponible à l'adresse suivante :
 
 Un fichier `transaction_test.http` est fourni pour tester les endpoints via un client HTTP. Il contient les scénarios d'inscription, d'authentification et de manipulation des transactions.
 
+
+## Installation avec Kubernetes
+
+Le projet peut être déployé sur un cluster Kubernetes en utilisant les fichiers de configuration situés dans le dossier `k8s/`.
+Les étapes principales sont les suivantes :
+
+1. Constuire les images Docker vers un registre accessible par le cluster.
+Par exemple, avec Minikube et Docker:
+
+- Bash
+```bash
+eval $(minikube docker-env)
+docker build -t anas-backend:latest .
+docker build -t anas-frontend:latest ./frontend
+docker build -t anas-llm-endpoint:latest ./llm_endpoint
+```
+- Powershell
+```powershell
+minikube docker-env | Invoke-Expression
+docker build -t anas-backend:latest .
+docker build -t anas-frontend:latest ./frontend
+docker build -t anas-llm-endpoint:latest ./llm_endpoint
+```
+
+2. Copier le fichier de secrets k8s/secrets_example.yaml en k8s/secrets.yaml et le modifier pour y ajouter vos variables:
+
+
+3. Créer le namespace anas :
+```bash
+kubectl create namespace anas
+```
+
+4. Créer les différents composants en appliquant récursivement le dossier k8s :
+```bash
+kubectl apply -R -f k8s/
+```
+
+5. Vérifier que tous les pods sont en état `Running` :
+```bash
+kubectl get pods -n anas
+```
+
+6. Eventuellement exposer le service frontend via un port local :
+```bash
+kubectl port-forward svc/frontend-service 5173:80 -n anas
+```
+
+### Avec k8s :
+
+Nous avons placé les images Docker sur un registre docker hub privé, donc il faut créer un secret docker pour que k8s puisse y accéder.
+
+1. Créer le secret docker (mettre le token d'accès et les informations de votre compte Docker Hub) :
+```bash
+kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v1/ --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email> -n <namespace>
+```
+
+2. Assurez vous que les fichiers de déploiement fassent référence au namespace correct (modifier `u-grp8` par votre namespace s'il est différent).
+
+3. Appliquer les fichiers k8s comme indiqué précédemment (pas besoin du namespace car il existe à distance) :
+```bash
+kubectl apply -R -f k8s/
+```
+
+4. En l'absence de règles DNS pour accéder au frontend, vous pouvez créer un tunnel avec le port forwarding :
+```bash
+kubectl port-forward svc/frontend-service 5173:80 -n u-grp8
+```
+
 ## Auteurs
 
 * [Gaëtan OUEYEYA](https://github.com/goueyeya)

@@ -67,14 +67,14 @@ def add_transaction(transaction: TransactionCreate,
     return new_transaction
 
 
-@router.get("/", response_model=List[TransactionResponse])
+@router.get("", response_model=List[TransactionResponse])
 def list_transactions(
         db: Session = Depends(get_db),
         current_user=Depends(get_current_user),
         start_date: Optional[datetime.date] = Query(None, description="Date de début (YYYY-MM-DD)"),
         end_date: Optional[datetime.date] = Query(None, description="Date de fin (YYYY-MM-DD)"),
         category_id: Optional[int] = Query(None, description="Filtrer par catégorie"),
-        transaction_type: Optional[str] = Query(None, regex="^(positive|negative)$",
+        transaction_type: Optional[str] = Query(None, pattern="^(positive|negative)$",
                                                 description="'positive' pour revenus, 'negative' pour dépenses"),
         asc: Optional[bool] = Query(False, description="Trier par date croissante si true, décroissante si false")
 ):

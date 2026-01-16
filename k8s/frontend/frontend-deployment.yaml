@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: u-grp8
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: frontend
+        image: gabelloide/anas-app:frontend-latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config

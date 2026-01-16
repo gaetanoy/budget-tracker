@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: anas-config
+  namespace: u-grp8
+data:
+  DATABASE_PORT: "5432"
+  DATABASE_HOST: "postgres-service"
+  LLM_SERVICE_URL: "http://llm-endpoint-service:8001"
+  ALLOWED_HOSTS_FRONT: "*"
