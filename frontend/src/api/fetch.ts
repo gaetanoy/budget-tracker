@@ -1,4 +1,4 @@
-const HOST = "";
+const HOST = import.meta.env.VITE_FASTAPI_URL;
 
 export function getAuthHeaders(getAuth: () => string): HeadersInit {
   return {
