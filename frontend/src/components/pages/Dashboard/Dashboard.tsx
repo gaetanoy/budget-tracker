@@ -30,10 +30,11 @@ export default function Dashboard() {
 
   const { getAuthorizationNonNull } = useAuth();
 
-  const [selectedMonth, setSelectedMonth] = useState(12);
-  const [selectedYear, setSelectedYear] = useState(2025);
+  const currentDate = new Date();
+  const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
+  const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
   const [activeTab, setActiveTab] = useState<"all" | "expense" | "income">(
-    "all"
+    "all",
   );
   const [filters, setFilters] = useState<TransactionFilters>({});
 
@@ -44,7 +45,7 @@ export default function Dashboard() {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   const [editingMovement, setEditingMovement] = useState<Transaction | null>(
-    null
+    null,
   );
 
   const movementsByDate = transactions.filter((mov) => {
@@ -79,7 +80,7 @@ export default function Dashboard() {
           date: mov.date.toISOString().split("T")[0],
           category_id: mov.category?.id ?? 1,
         },
-        getAuthorizationNonNull
+        getAuthorizationNonNull,
       );
 
       const formatted: Transaction = {
@@ -119,7 +120,7 @@ export default function Dashboard() {
           date: updated.date.toISOString().split("T")[0],
           category_id: updated.category?.id ?? 1,
         },
-        getAuthorizationNonNull
+        getAuthorizationNonNull,
       );
 
       // Local update
@@ -133,8 +134,8 @@ export default function Dashboard() {
                 date: new Date(result.date),
                 category: updated.category,
               }
-            : t
-        )
+            : t,
+        ),
       );
 
       setEditingMovement(null);
@@ -181,7 +182,7 @@ export default function Dashboard() {
       try {
         const transactions = await getTransactions(
           filters,
-          getAuthorizationNonNull
+          getAuthorizationNonNull,
         );
 
         const mapped = transactions.map((t) => ({
