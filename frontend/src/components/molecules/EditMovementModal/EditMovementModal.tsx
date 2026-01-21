@@ -34,7 +34,7 @@ export const EditMovementModal: React.FC<EditMovementModalProps> = ({
       label,
       amount: parseFloat(amount),
       category,
-      date: date,
+      date,
     });
     onClose();
   };
