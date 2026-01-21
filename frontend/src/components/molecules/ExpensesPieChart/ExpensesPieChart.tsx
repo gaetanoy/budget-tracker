@@ -8,7 +8,7 @@ import {
   Label,
 } from "recharts";
 import styled from "styled-components";
-import type { Transaction } from "../../atoms/Movement/Movement.types";
+import type { Transaction } from "../../../types/Transaction";
 
 const ChartWrapper = styled.div`
   width: 100%;
@@ -26,20 +26,23 @@ type Props = {
 };
 
 export const ExpensesPieChart: React.FC<Props> = ({ data, title }) => {
-  const aggregatedData = data.reduce((acc, curr) => {
-    // On prend la valeur absolue pour le camembert
-    const categoryName = curr.category?.title || "Autres";
-    const color = curr.category?.color || "#ccc";
-    const amount = Math.abs(curr.value);
+  const aggregatedData = data.reduce(
+    (acc, curr) => {
+      // On prend la valeur absolue pour le camembert
+      const categoryName = curr.category?.title || "Autres";
+      const color = curr.category?.color || "#ccc";
+      const amount = Math.abs(curr.amount);
 
-    const existing = acc.find((item) => item.name === categoryName);
-    if (existing) {
-      existing.value += amount;
-    } else {
-      acc.push({ name: categoryName, value: amount, color });
-    }
-    return acc;
-  }, [] as { name: string; value: number; color: string }[]);
+      const existing = acc.find((item) => item.name === categoryName);
+      if (existing) {
+        existing.value += amount;
+      } else {
+        acc.push({ name: categoryName, value: amount, color });
+      }
+      return acc;
+    },
+    [] as { name: string; value: number; color: string }[],
+  );
 
   const totalAmount = aggregatedData.reduce((acc, item) => acc + item.value, 0);
 

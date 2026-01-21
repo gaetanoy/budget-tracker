@@ -5,5 +5,5 @@ export type Transaction = {
   amount: number;
   label: string;
   date: string;
-  category: Category;
+  category?: Category;
 };

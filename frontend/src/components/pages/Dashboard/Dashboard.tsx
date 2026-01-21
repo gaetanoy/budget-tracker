@@ -3,7 +3,7 @@ import * as Styled from "./Dashboard.styles";
 
 import Summary from "../../molecules/Summary/Summary";
 import { Movements } from "../../molecules/Movements/Movements";
-import type { Transaction } from "../../atoms/Movement/Movement.types";
+import type { Transaction } from "../../../types/Transaction";
 import { AddMovementModal } from "../../molecules/AddMovementModal/AddMovementModal";
 import { AddCategoryModal } from "../../molecules/AddCategoryModal/AddCategoryModal";
 import type { Category } from "../../../types/Category";
@@ -60,17 +60,17 @@ export default function Dashboard() {
   });
 
   const displayedMovements = movementsByDate.filter((mov) => {
-    if (activeTab === "expense") return mov.value < 0;
-    if (activeTab === "income") return mov.value > 0;
+    if (activeTab === "expense") return mov.amount < 0;
+    if (activeTab === "income") return mov.amount > 0;
     return true;
   });
 
   const chartData = movementsByDate.filter((mov) => {
-    if (activeTab === "income") return mov.value > 0;
-    return mov.value < 0;
+    if (activeTab === "income") return mov.amount > 0;
+    return mov.amount < 0;
   });
 
-  const globalBalance = transactions.reduce((acc, m) => acc + m.value, 0);
+  const globalBalance = transactions.reduce((acc, m) => acc + m.amount, 0);
 
   const addMovement = async (mov: Omit<Transaction, "id">) => {
     try {
@@ -79,18 +79,18 @@ export default function Dashboard() {
       const created = await createTransaction(
         {
           title: mov.label,
-          amount: mov.value,
-          date: mov.date.toISOString().split("T")[0],
+          amount: mov.amount,
+          date: mov.date,
           category_id: mov.category?.id ?? 1,
         },
         getAuthorizationNonNull,
       );
 
       const formatted: Transaction = {
-        id: created.id,
+        id: created.id.toString(),
         label: created.title,
-        value: created.amount,
-        date: new Date(created.date),
+        amount: created.amount,
+        date: created.date,
         category: mov.category,
       };
 
@@ -104,7 +104,7 @@ export default function Dashboard() {
 
   const deleteMovement = async (movement: Transaction) => {
     try {
-      await removeTransaction(movement.id, getAuthorizationNonNull);
+      await removeTransaction(movement.amount, getAuthorizationNonNull);
       setTransactions((prev) => prev.filter((m) => m.id !== movement.id));
     } catch (e) {
       console.error("Error deleting movement:", e);
@@ -116,11 +116,11 @@ export default function Dashboard() {
   const updateMovement = async (updated: Transaction) => {
     try {
       const result = await modifyTransaction(
-        updated.id,
+        updated.amount,
         {
           title: updated.label,
-          amount: updated.value,
-          date: updated.date.toISOString().split("T")[0],
+          amount: updated.amount,
+          date: updated.date,
           category_id: updated.category?.id ?? 1,
         },
         getAuthorizationNonNull,
@@ -133,8 +133,8 @@ export default function Dashboard() {
             ? {
                 ...t,
                 label: result.title,
-                value: result.amount,
-                date: new Date(result.date),
+                amount: result.amount,
+                date: result.date,
                 category: updated.category,
               }
             : t,
@@ -189,10 +189,10 @@ export default function Dashboard() {
         );
 
         const mapped = transactions.map((t) => ({
-          id: t.id,
+          id: t.id.toString(),
           label: t.title,
-          value: t.amount,
-          date: new Date(t.date),
+          amount: t.amount,
+          date: t.date,
           category: categories.find((c) => c.id === t.category_id),
         }));
 

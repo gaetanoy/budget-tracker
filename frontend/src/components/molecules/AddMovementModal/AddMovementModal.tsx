@@ -24,7 +24,7 @@ export const SelectCategory = React.memo(function SelectCategory({
         title: category.name,
         color: category.color ?? "",
         icon: category.icon ?? "",
-      } satisfies Category)
+      }) satisfies Category,
   );
 
   return (
@@ -33,7 +33,7 @@ export const SelectCategory = React.memo(function SelectCategory({
       onChange={(e) => {
         const selectedTitle = e.target.value;
         const selectedCategory = categories.find(
-          (cat) => cat.title === selectedTitle
+          (cat) => cat.title === selectedTitle,
         );
         if (selectedCategory) {
           setCategory(selectedCategory);
@@ -51,13 +51,13 @@ export const SelectCategory = React.memo(function SelectCategory({
 });
 
 export const AddMovementModal: React.FC<AddMovementModalProps> = (
-  props: AddMovementModalProps
+  props: AddMovementModalProps,
 ) => {
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState<Category>(DEFAULT_CATEGORY);
   const [date, setDate] = useState<string>(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().split("T")[0],
   );
   const [loadingGuess, setLoadingGuess] = useState(false);
 
@@ -65,7 +65,7 @@ export const AddMovementModal: React.FC<AddMovementModalProps> = (
 
   const categoriesPromise = useMemo(
     () => getCategories(getAuthorizationNonNull),
-    [getAuthorizationNonNull]
+    [getAuthorizationNonNull],
   );
 
   const handleAutoGuess = async () => {
@@ -76,13 +76,13 @@ export const AddMovementModal: React.FC<AddMovementModalProps> = (
     try {
       const guess = await autoCategorize(
         { transaction_description: label },
-        getAuthorizationNonNull
+        getAuthorizationNonNull,
       );
 
       const categoriesResolved = await categoriesPromise;
 
       const matched = categoriesResolved.find(
-        (c) => c.name.toLowerCase() === guess.category.toLowerCase()
+        (c) => c.name.toLowerCase() === guess.category.toLowerCase(),
       );
 
       if (matched) {
@@ -106,9 +106,9 @@ export const AddMovementModal: React.FC<AddMovementModalProps> = (
 
     props.onAdd({
       label,
-      value: parseFloat(amount),
+      amount: parseFloat(amount),
       category: category,
-      date: new Date(date),
+      date: date,
     });
     props.onClose();
   };

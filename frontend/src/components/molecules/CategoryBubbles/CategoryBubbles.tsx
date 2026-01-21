@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import type { Transaction } from "../../atoms/Movement/Movement.types";
+import type { Transaction } from "../../../types/Transaction";
 
 const Grid = styled.div`
   display: flex;
@@ -53,25 +53,31 @@ type Props = {
 
 export const CategoryBubbles = ({ movements, type }: Props) => {
   // 1. Agréger les données par catégorie
-  const aggregated = movements.reduce((acc, curr) => {
-    // Filtrage selon le type demandé
-    if (type === "expense" && curr.value >= 0) return acc;
-    if (type === "income" && curr.value <= 0) return acc;
-    if (type === "all" && curr.value >= 0) return acc; // Par défaut "Tout" montre les dépenses
+  const aggregated = movements.reduce(
+    (acc, curr) => {
+      // Filtrage selon le type demandé
+      if (type === "expense" && curr.amount >= 0) return acc;
+      if (type === "income" && curr.amount <= 0) return acc;
+      if (type === "all" && curr.amount >= 0) return acc; // Par défaut "Tout" montre les dépenses
 
-    const categoryId = curr.category?.title || "Autres";
+      const categoryId = curr.category?.title || "Autres";
 
-    if (!acc[categoryId]) {
-      acc[categoryId] = {
-        title: categoryId,
-        color: curr.category?.color || "#ccc",
-        icon: curr.category?.icon || "?",
-        total: 0,
-      };
-    }
-    acc[categoryId].total += curr.value;
-    return acc;
-  }, {} as Record<string, { title: string; color: string; icon: string; total: number }>);
+      if (!acc[categoryId]) {
+        acc[categoryId] = {
+          title: categoryId,
+          color: curr.category?.color || "#ccc",
+          icon: curr.category?.icon || "?",
+          total: 0,
+        };
+      }
+      acc[categoryId].total += curr.amount;
+      return acc;
+    },
+    {} as Record<
+      string,
+      { title: string; color: string; icon: string; total: number }
+    >,
+  );
 
   const categories = Object.values(aggregated);
 
