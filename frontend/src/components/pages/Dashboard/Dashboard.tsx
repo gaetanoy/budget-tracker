@@ -30,11 +30,12 @@ export default function Dashboard() {
 
   const { getAuthorizationNonNull } = useAuth();
 
-  const currentDate = new Date();
   const [selectedMonth, setSelectedMonth] = useState(
-    currentDate.getMonth() + 1,
+    () => new Date().getMonth() + 1,
   );
-  const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
+  const [selectedYear, setSelectedYear] = useState(
+    () => new Date().getFullYear(),
+  );
   const [activeTab, setActiveTab] = useState<"all" | "expense" | "income">(
     "all",
   );
