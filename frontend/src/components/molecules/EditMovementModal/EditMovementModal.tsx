@@ -1,7 +1,7 @@
 import React, { Suspense, useState } from "react";
 import * as Styled from "./EditMovementModal.styles";
 import { DEFAULT_CATEGORY, type Category } from "../../../types/Category";
-import type { Transaction } from "../../atoms/Movement/Movement.types";
+import type { Transaction } from "../../../types/Transaction";
 import { getCategories } from "../../../api/category";
 import { useAuth } from "../../../context/auth";
 import { SelectCategory } from "../AddMovementModal/AddMovementModal";
@@ -18,11 +18,11 @@ export const EditMovementModal: React.FC<EditMovementModalProps> = ({
   onClose,
 }) => {
   const [label, setLabel] = useState(movement.label);
-  const [amount, setAmount] = useState(movement.value.toString());
+  const [amount, setAmount] = useState(movement.amount.toString());
   const [category, setCategory] = useState<Category>(
-    movement.category ?? DEFAULT_CATEGORY
+    movement.category ?? DEFAULT_CATEGORY,
   );
-  const [date, setDate] = useState(movement.date.toISOString().split("T")[0]);
+  const [date, setDate] = useState(movement.date);
 
   const { getAuthorizationNonNull } = useAuth();
   const categories = getCategories(getAuthorizationNonNull);
@@ -32,9 +32,9 @@ export const EditMovementModal: React.FC<EditMovementModalProps> = ({
     onSave({
       ...movement,
       label,
-      value: parseFloat(amount),
+      amount: parseFloat(amount),
       category,
-      date: new Date(date),
+      date,
     });
     onClose();
   };

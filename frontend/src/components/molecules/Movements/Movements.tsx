@@ -7,30 +7,8 @@ export const Movements: React.FC<MovementsProps> = ({
   onDelete,
   onEdit,
 }) => {
-  const formatDateLabel = (date: Date): string => {
-    const today = new Date();
-    const d = new Date(date);
-
-    const isSameDay = (a: Date, b: Date) =>
-      a.getFullYear() === b.getFullYear() &&
-      a.getMonth() === b.getMonth() &&
-      a.getDate() === b.getDate();
-
-    const yesterday = new Date();
-    yesterday.setDate(today.getDate() - 1);
-
-    if (isSameDay(d, today)) return "Aujourd'hui";
-    if (isSameDay(d, yesterday)) return "Hier";
-
-    return d.toLocaleDateString("fr-FR", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
-  };
-
   const grouped = items.reduce<Record<string, typeof items>>((acc, item) => {
-    const label = formatDateLabel(item.date);
+    const label = item.date;
     if (!acc[label]) acc[label] = [];
     acc[label].push(item);
     return acc;

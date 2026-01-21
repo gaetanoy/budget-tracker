@@ -1,4 +1,4 @@
-import type { Transaction } from "../../atoms/Movement/Movement.types";
+import type { Transaction } from "../../../types/Transaction";
 
 export type MovementsProps = {
   items: Transaction[];
